@@ -3,14 +3,6 @@
 Advanced Phone Number Intelligence Tool - Professional OSINT Framework
 Version: 2.1 - Enhanced Cyberpunk GUI + All Bugs Fixed + Enhanced Animations
 For authorized security research and investigations only
-
-ENHANCEMENTS ADDED:
-  - Enhanced particle system with trailing effects
-  - Glowing text with dynamic color cycling
-  - 3D-like rotating hex grid with depth perception
-  - Improved scan-line effects with multi-color gradients
-  - Ripple effects with harmonic wave patterns
-  - Fixed all identified bugs and edge cases
 """
 
 # ── Standard library ──────────────────────────────────────────────────────────
@@ -125,7 +117,7 @@ FONT_TITLE   = ("Courier New", 20, "bold")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ENHANCED ANIMATED WIDGETS
+# BASE ANIMATED WIDGETS (Define these FIRST)
 # ─────────────────────────────────────────────────────────────────────────────
 
 class Particle:
@@ -139,33 +131,477 @@ class Particle:
         self.max_life = life
         self.color = color
 
-class EnhancedMatrixCanvas(tk.Canvas):
-    """Enhanced falling characters with trailing glow and particle effects."""
-    CHARS = "01アイウエオカキクケコサシスセソタ@#$%&!?▓▒░⚡◈◉◊○●"
+
+class PulsingRing(tk.Canvas):
+    """Base class for pulsing rings - Define this BEFORE HarmonicRipple"""
+    def __init__(self, master, size=70, color=CYAN_BRIGHT, **kw):
+        super().__init__(master, width=size, height=size,
+                         bg=DARK_BG, highlightthickness=0, **kw)
+        self._size = size
+        self._color = color
+        self._phase = 0.0
+        self._alive = True
+        self._rings = []
+        self._init_rings()
+        self._animate()
+
+    def _init_rings(self):
+        """Initialize the rings"""
+        c = self._size // 2
+        for i in range(3):
+            ring = self.create_oval(c, c, c, c, outline=self._color, width=2)
+            self._rings.append(ring)
+
+    def destroy(self):
+        self._alive = False
+        super().destroy()
+
+    def _animate(self):
+        if not self._alive:
+            return
+        try:
+            c = self._size // 2
+            self._phase = (self._phase + 0.07) % (math.pi * 2)
+            for i, rid in enumerate(self._rings):
+                offset = i * math.pi * 2 / 3
+                scale = (math.sin(self._phase + offset) + 1) / 2
+                r = 6 + scale * (c - 8)
+                self.coords(rid, c - r, c - r, c + r, c + r)
+        except tk.TclError:
+            return
+        self.after(35, self._animate)
+
+
+class MatrixCanvas(tk.Canvas):
+    """Falling kana / binary characters – matrix rain effect."""
+    CHARS = "01アイウエオカキクケコサシスセソタ@#$%&!?▓▒░"
 
     def __init__(self, master, width, height, **kw):
         super().__init__(master, width=width, height=height,
                          bg=DARK_BG, highlightthickness=0, **kw)
         self._w = width
         self._h = height
-        self._cols = max(1, width // 12)
-        self._drops = [random.randint(-height // 12, 0) for _ in range(self._cols)]
-        self._speeds = [random.uniform(0.8, 2.0) for _ in range(self._cols)]
-        self._glow_trails = []
+        self._cols = max(1, width // 14)
+        self._drops = [random.randint(-height // 14, 0) for _ in range(self._cols)]
         self._alive = True
         self._animate()
-        self._create_glow_layers()
-
-    def _create_glow_layers(self):
-        """Create multiple canvas layers for glow effects"""
-        for i in range(3):
-            layer = tk.Canvas(self, width=self._w, height=self._h,
-                              bg=DARK_BG, highlightthickness=0)
-            layer.place(x=0, y=0)
 
     def destroy(self):
         self._alive = False
         super().destroy()
+
+    def _animate(self):
+        if not self._alive:
+            return
+        try:
+            for i in range(self._cols):
+                x = i * 14 + 7
+                y = self._drops[i] * 14
+                ch = random.choice(self.CHARS)
+                color = CYAN_BRIGHT if random.random() > 0.95 else TEXT_DIM
+                tid = self.create_text(x, y, text=ch, fill=color,
+                                       font=("Courier New", 10), anchor="center")
+                self.after(300, lambda t=tid: self._safe_del(t))
+                if self._drops[i] * 14 > self._h and random.random() > 0.975:
+                    self._drops[i] = 0
+                else:
+                    self._drops[i] += 1
+        except tk.TclError:
+            return
+        self.after(65, self._animate)
+
+    def _safe_del(self, tid):
+        try:
+            self.delete(tid)
+        except Exception:
+            pass
+
+
+class HexGrid(tk.Canvas):
+    """Animated honeycomb hex grid background."""
+    def __init__(self, master, width, height, **kw):
+        super().__init__(master, width=width, height=height,
+                         bg=DARK_BG, highlightthickness=0, **kw)
+        self._alive = True
+        self._hexes = []
+        self._t = 0.0
+        self._build(width, height)
+        self._animate()
+
+    def destroy(self):
+        self._alive = False
+        super().destroy()
+
+    def _hex_points(self, cx, cy, r):
+        pts = []
+        for i in range(6):
+            a = math.radians(60 * i - 30)
+            pts += [cx + r * math.cos(a), cy + r * math.sin(a)]
+        return pts
+
+    def _build(self, width, height):
+        r = 28
+        for row in range(-1, int(height / (r * 1.72)) + 2):
+            for col in range(-1, int(width / (r * 2)) + 2):
+                cx = col * r * 2 + (r if row % 2 else 0)
+                cy = row * r * 1.72
+                pts = self._hex_points(cx, cy, r - 2)
+                hid = self.create_polygon(pts, fill=DARK_BG,
+                                          outline=BORDER_COLOR, width=1)
+                self._hexes.append((hid, random.uniform(0, math.pi * 2)))
+
+    def _animate(self):
+        if not self._alive:
+            return
+        try:
+            self._t += 0.04
+            for hid, phase in self._hexes:
+                val = (math.sin(self._t + phase) + 1) / 2
+                if val > 0.93:
+                    self.itemconfig(hid, fill="#081828", outline=CYAN_MID)
+                elif val > 0.82:
+                    self.itemconfig(hid, fill="#050e18", outline=BORDER_COLOR)
+                else:
+                    self.itemconfig(hid, fill=DARK_BG, outline="#071420")
+        except tk.TclError:
+            return
+        self.after(60, self._animate)
+
+
+class GlitchLabel(tk.Label):
+    """Label that randomly glitches characters to mimic CRT noise."""
+    _GLITCH = "█▓▒░▄▀■□◈◉"
+
+    def __init__(self, master, text="", glitch_interval=4000, **kw):
+        super().__init__(master, text=text, **kw)
+        self._orig = text
+        self._gi = glitch_interval
+        self._alive = True
+        self._schedule()
+
+    def destroy(self):
+        self._alive = False
+        super().destroy()
+
+    def _schedule(self):
+        if self._alive:
+            self.after(self._gi + random.randint(-400, 400), self._glitch)
+
+    def _glitch(self):
+        if not self._alive:
+            return
+        try:
+            glitched = "".join(
+                random.choice(self._GLITCH) if random.random() < 0.12 else ch
+                for ch in self._orig
+            )
+            self.config(text=glitched)
+            self.after(90, lambda: self._restore())
+        except tk.TclError:
+            return
+
+    def _restore(self):
+        try:
+            self.config(text=self._orig)
+        except Exception:
+            pass
+        self._schedule()
+
+
+class TypewriterLabel(tk.Label):
+    """Animates text appearing one character at a time."""
+    def __init__(self, master, full_text="", speed=35, **kw):
+        super().__init__(master, text="", **kw)
+        self._full = full_text
+        self._speed = speed
+        self._idx = 0
+        self._alive = True
+
+    def destroy(self):
+        self._alive = False
+        super().destroy()
+
+    def start(self, text=None):
+        if text:
+            self._full = text
+        self._idx = 0
+        try:
+            self.config(text="")
+        except Exception:
+            return
+        self._tick()
+
+    def _tick(self):
+        if not self._alive or self._idx >= len(self._full):
+            return
+        try:
+            self.config(text=self._full[:self._idx + 1])
+            self._idx += 1
+            self.after(self._speed, self._tick)
+        except tk.TclError:
+            pass
+
+
+class CyberEntry(tk.Frame):
+    """Input field with an animated horizontal scan-line and glow border."""
+    def __init__(self, master, textvariable=None, width=26, **kw):
+        super().__init__(master, bg=DARK_BG, **kw)
+        self._focused = False
+        self._scan_x = 0
+        self._scan_dir = 1
+        self._alive = True
+
+        self._canvas = tk.Canvas(self, height=42, bg=CARD_BG,
+                                 highlightthickness=1,
+                                 highlightbackground=CYAN_DIM)
+        self._canvas.pack(fill="x", expand=True)
+
+        self._var = textvariable if textvariable else tk.StringVar()
+        self._entry = tk.Entry(self._canvas, textvariable=self._var,
+                               bg=CARD_BG, fg=CYAN_BRIGHT,
+                               insertbackground=CYAN_BRIGHT,
+                               relief="flat", font=("Courier New", 13),
+                               width=width, bd=0)
+        self._win = self._canvas.create_window(12, 21, window=self._entry, anchor="w")
+        self._scan = self._canvas.create_rectangle(0, 0, 0, 42,
+                                                   fill=CYAN_DIM, outline="")
+
+        self._entry.bind("<FocusIn>",  self._on_focus)
+        self._entry.bind("<FocusOut>", self._on_blur)
+        self._canvas.bind("<Configure>", self._on_resize)
+        self._animate()
+
+    def destroy(self):
+        self._alive = False
+        super().destroy()
+
+    def _on_focus(self, _=None):
+        self._focused = True
+        try:
+            self._canvas.config(highlightbackground=CYAN_BRIGHT,
+                                highlightthickness=2)
+        except Exception:
+            pass
+
+    def _on_blur(self, _=None):
+        self._focused = False
+        try:
+            self._canvas.config(highlightbackground=CYAN_DIM,
+                                highlightthickness=1)
+        except Exception:
+            pass
+
+    def _on_resize(self, e):
+        try:
+            self._canvas.itemconfig(self._win,
+                                    width=max(10, e.width - 24))
+        except Exception:
+            pass
+
+    def _animate(self):
+        if not self._alive:
+            return
+        try:
+            w = self._canvas.winfo_width()
+            if w < 10:
+                self.after(50, self._animate)
+                return
+            speed = 5 if self._focused else 1
+            self._scan_x += speed * self._scan_dir
+            if self._scan_x >= w or self._scan_x <= 0:
+                self._scan_dir *= -1
+            fill = CYAN_BRIGHT if self._focused else "#082030"
+            self._canvas.coords(self._scan,
+                                 self._scan_x - 22, 0,
+                                 self._scan_x + 22, 42)
+            self._canvas.itemconfig(self._scan, fill=fill)
+        except tk.TclError:
+            return
+        self.after(28, self._animate)
+
+    def get(self):
+        return self._var.get()
+
+    def set(self, val):
+        self._var.set(val)
+
+
+class CyberButton(tk.Canvas):
+    """Corner-bracket button with hover glow and click ripple."""
+    def __init__(self, master, text="", command=None,
+                 color=CYAN_BRIGHT, width=150, height=40, **kw):
+        super().__init__(master, width=width, height=height,
+                         bg=DARK_BG, highlightthickness=0, **kw)
+        self._text = text
+        self._cmd = command
+        self._color = color
+        self._w, self._h = width, height
+        self._hover = False
+        self._phase = 0.0
+        self._ripples = []   # list of [x, y, radius]
+        self._disabled = False
+        self._alive = True
+
+        # Build static elements
+        self._bg = self.create_rectangle(2, 2, width - 2, height - 2,
+                                         fill=CARD_BG, outline=color, width=1)
+        bracket_len = 10
+        for pts, tag in [
+            ([2, 2, bracket_len, 2], "tl"),
+            ([width - bracket_len, 2, width - 2, 2], "tr"),
+            ([2, height - 2, bracket_len, height - 2], "bl"),
+            ([width - bracket_len, height - 2, width - 2, height - 2], "br"),
+        ]:
+            self.create_line(*pts, fill=color, width=2, tags=("bracket", tag))
+
+        self._lbl = self.create_text(width // 2, height // 2, text=text,
+                                     fill=color, font=FONT_BTN, anchor="center")
+
+        self.bind("<Enter>",    self._on_enter)
+        self.bind("<Leave>",    self._on_leave)
+        self.bind("<Button-1>", self._on_click)
+        self._animate()
+
+    def destroy(self):
+        self._alive = False
+        super().destroy()
+
+    def _on_enter(self, _=None):
+        if not self._disabled:
+            self._hover = True
+            try:
+                self.itemconfig(self._bg, fill="#0a2030")
+            except Exception:
+                pass
+
+    def _on_leave(self, _=None):
+        self._hover = False
+        try:
+            self.itemconfig(self._bg, fill=CARD_BG)
+        except Exception:
+            pass
+
+    def _on_click(self, e):
+        if not self._disabled and self._cmd:
+            self._ripples.append([e.x, e.y, 0])
+            self._cmd()
+
+    def config_state(self, state):
+        self._disabled = (state == "disabled")
+        dim = TEXT_DIM if self._disabled else self._color
+        try:
+            self.itemconfig(self._lbl, fill=dim)
+            self.itemconfig(self._bg, outline=dim)
+            self.itemconfig("bracket", fill=dim)
+        except Exception:
+            pass
+
+    def _animate(self):
+        if not self._alive:
+            return
+        try:
+            self._phase = (self._phase + 0.1) % (math.pi * 2)
+            if self._hover:
+                self.itemconfig(self._bg, width=2)
+            else:
+                self.itemconfig(self._bg, width=1)
+
+            dead = []
+            for rip in self._ripples:
+                rip[2] += 5
+                rx, ry, radius = rip
+                if radius > max(self._w, self._h):
+                    dead.append(rip)
+                    continue
+                rid = self.create_oval(rx - radius, ry - radius,
+                                       rx + radius, ry + radius,
+                                       outline=self._color, fill="", width=1)
+                self.after(120, lambda i=rid: self._safe_del(i))
+            for d in dead:
+                self._ripples.remove(d)
+        except tk.TclError:
+            return
+        self.after(40, self._animate)
+
+    def _safe_del(self, iid):
+        try:
+            self.delete(iid)
+        except Exception:
+            pass
+
+
+class ProgressArc(tk.Canvas):
+    """Circular arc that spins during analysis and fills on completion."""
+    def __init__(self, master, size=52, **kw):
+        super().__init__(master, width=size, height=size,
+                         bg=DARK_BG, highlightthickness=0, **kw)
+        self._size = size
+        self._spinning = False
+        self._spin_angle = 90
+        self._alive = True
+        c, r = size // 2, size // 2 - 6
+        self.create_oval(c - r, c - r, c + r, c + r,
+                          outline=BORDER_COLOR, width=2)
+        self._arc = self.create_arc(c - r, c - r, c + r, c + r,
+                                    start=90, extent=0,
+                                    outline=CYAN_BRIGHT, style="arc", width=3)
+        self._dot = self.create_text(c, c, text="◈", fill=TEXT_DIM,
+                                     font=("Courier New", 10, "bold"))
+        self._animate()
+
+    def destroy(self):
+        self._alive = False
+        super().destroy()
+
+    def start_spin(self):
+        self._spinning = True
+        try:
+            self.itemconfig(self._dot, text="…", fill=AMBER_BRIGHT)
+        except Exception:
+            pass
+
+    def stop_spin(self):
+        self._spinning = False
+        try:
+            self.itemconfig(self._arc, start=90, extent=-360,
+                            outline=GREEN_NEON)
+            self.itemconfig(self._dot, text="✓", fill=GREEN_NEON)
+        except Exception:
+            pass
+
+    def reset(self):
+        self._spinning = False
+        try:
+            self.itemconfig(self._arc, start=90, extent=0,
+                            outline=CYAN_BRIGHT)
+            self.itemconfig(self._dot, text="◈", fill=TEXT_DIM)
+        except Exception:
+            pass
+
+    def _animate(self):
+        if not self._alive:
+            return
+        try:
+            if self._spinning:
+                self._spin_angle = (self._spin_angle + 8) % 360
+                self.itemconfig(self._arc,
+                                start=self._spin_angle, extent=-120)
+        except tk.TclError:
+            return
+        self.after(30, self._animate)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ENHANCED ANIMATED WIDGETS (Now PulsingRing is defined, so these work)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class EnhancedMatrixCanvas(MatrixCanvas):
+    """Enhanced falling characters with trailing glow and particle effects."""
+    CHARS = "01アイウエオカキクケコサシスセソタ@#$%&!?▓▒░⚡◈◉◊○●"
+
+    def __init__(self, master, width, height, **kw):
+        super().__init__(master, width, height, **kw)
+        self._glow_trails = []
 
     def _animate(self):
         if not self._alive:
@@ -207,9 +643,8 @@ class EnhancedMatrixCanvas(tk.Canvas):
                 # Update drop position
                 if self._drops[i] * 12 > self._h + 20:
                     self._drops[i] = -random.randint(5, 15)
-                    self._speeds[i] = random.uniform(0.8, 2.0)
                 else:
-                    self._drops[i] += self._speeds[i]
+                    self._drops[i] += 1
                     
         except tk.TclError:
             return
@@ -228,44 +663,16 @@ class EnhancedMatrixCanvas(tk.Canvas):
         except:
             return color
 
-    def _safe_del(self, tid):
-        try:
-            self.delete(tid)
-        except Exception:
-            pass
 
-
-class EnhancedHexGrid(tk.Canvas):
+class EnhancedHexGrid(HexGrid):
     """3D-like rotating hex grid with depth perception and glow."""
     def __init__(self, master, width, height, **kw):
-        super().__init__(master, width=width, height=height,
-                         bg=DARK_BG, highlightthickness=0, **kw)
-        self._alive = True
-        self._hexes = []
-        self._t = 0.0
+        super().__init__(master, width, height, **kw)
         self._rotation = 0.0
         self._pulse_phase = 0.0
-        self._build_3d_hexes(width, height)
-        self._animate()
 
-    def destroy(self):
-        self._alive = False
-        super().destroy()
-
-    def _hex_points_3d(self, cx, cy, r, depth):
-        """Generate hex points with 3D effect"""
-        pts = []
-        for i in range(6):
-            a = math.radians(60 * i - 30 + self._rotation)
-            # Apply depth scaling
-            scale = 1.0 - depth * 0.3
-            x = cx + r * math.cos(a) * scale
-            y = cy + r * math.sin(a) * scale * 0.8  # Perspective flattening
-            pts += [x, y]
-        return pts
-
-    def _build_3d_hexes(self, width, height):
-        """Build hex grid with depth layers"""
+    def _build(self, width, height):
+        """Override to create 3D hexes"""
         base_r = 32
         depths = [0.0, 0.3, 0.6, 0.9]  # Multiple depth layers
         
@@ -297,6 +704,18 @@ class EnhancedHexGrid(tk.Canvas):
                     hid = self.create_polygon(pts, fill=fill,
                                              outline=outline, width=1 + depth)
                     self._hexes.append((hid, depth, glow_factor))
+
+    def _hex_points_3d(self, cx, cy, r, depth):
+        """Generate hex points with 3D effect"""
+        pts = []
+        for i in range(6):
+            a = math.radians(60 * i - 30 + self._rotation)
+            # Apply depth scaling
+            scale = 1.0 - depth * 0.3
+            x = cx + r * math.cos(a) * scale
+            y = cy + r * math.sin(a) * scale * 0.8  # Perspective flattening
+            pts += [x, y]
+        return pts
 
     def _adjust_brightness(self, color, factor):
         """Adjust color brightness"""
@@ -602,7 +1021,6 @@ class PulseButton(CyberButton):
                 # Create multiple ripple layers
                 for i in range(3):
                     r_offset = radius + i * 8
-                    alpha = 1.0 - i * 0.3
                     rid = self.create_oval(rx - r_offset, ry - r_offset,
                                            rx + r_offset, ry + r_offset,
                                            outline=self._color, fill="", width=1)
@@ -686,7 +1104,7 @@ class ProgressWheel(ProgressArc):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# INTELLIGENCE ENGINE (unchanged - already working)
+# INTELLIGENCE ENGINE
 # ─────────────────────────────────────────────────────────────────────────────
 class AdvancedPhoneIntel:
     def __init__(self):
