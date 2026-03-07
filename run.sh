@@ -335,112 +335,315 @@ print_step "📝 CREATING INSTALLATION FILE"
 
 cat > install.py << 'EOF'
 #!/usr/bin/env python3
-"""
-Unified Security Analysis Tool - Professional Edition
-Installation and setup script
-"""
-
+import os
 import sys
 import subprocess
-import platform
-import os
 import time
+import shutil
+from datetime import datetime
 
-def print_color(text, color=None):
-    """Print colored text"""
-    colors = {
-        'red': '\033[91m',
-        'green': '\033[92m',
-        'yellow': '\033[93m',
-        'blue': '\033[94m',
-        'purple': '\033[95m',
-        'cyan': '\033[96m',
-        'white': '\033[97m',
-        'bold': '\033[1m',
-        'end': '\033[0m'
-    }
-    
-    if color and color in colors:
-        print(f"{colors[color]}{text}{colors['end']}")
-    else:
-        print(text)
+BANNER = """
+\033[1;36m
+           ╔═══════════════════════════════════════════════════════════════╗
+           ║  ██╗   ██╗███╗   ██╗██╗███████╗██╗███████╗██████╗   ╔══════╗  ║
+           ║  ██║   ██║████╗  ██║██║██╔════╝██║██╔════╝██╔══██╗  ║ CYBER║  ║
+           ║  ██║   ██║██╔██╗ ██║██║█████╗  ██║█████╗  ██║  ██║  ║  ═════╝  ║
+           ║  ██║   ██║██║╚██╗██║██║██╔══╝  ██║██╔══╝  ██║  ██║  ║ ELITE  ║
+           ║  ╚██████╔╝██║ ╚████║██║██║     ██║███████╗██████╔╝  ║  ═════╗  ║
+           ║   ╚═════╝ ╚═╝  ╚═══╝╚═╝╚═╝     ╚═╝╚══════╝╚═════╝   ║ TOOL  ║  ║
+           ╚═══════════════════════════════════════════════════════════════╝
+\033[0m
+"""
+SKULL = """
+\033[1;31m
+                     ▄▄▄▄▄▄▄▄▄▄▄
+                  ▄█████████████████▄
+                ███████████████████████
+               █████████████████████████
+               █████████████████████████
+               ████████████▀▀███████████
+               ███████████   ███████████
+               ███████████   ███████████
+               ███████████   ███████████
+               █████████████████████████
+               █████████████████████████
+               █████████████████████████
+                ███████████████████████
+                  ▀█████████████████▀
+                      ▀▀▀▀▀▀▀▀▀
+\033[0m
+"""
 
-def loading_animation(message):
-    """Show loading animation"""
-    chars = "|/-\\"
-    for i in range(20):
-        sys.stdout.write(f'\r{message} {chars[i % len(chars)]}')
+SRC_MAIN_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src", "main")
+
+def clear_screen():
+    """Clear the terminal screen with style"""
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def print_animated(text, delay=0.03):
+    """Print text with typewriter animation"""
+    for char in text:
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        time.sleep(delay)
+    print()
+
+def loading_animation(message="Loading", duration=1):
+    """Show a loading animation"""
+    chars = "⣾⣽⣻⢿⡿⣟⣯⣷"
+    for i in range(int(duration * 10)):
+        sys.stdout.write(f'\r\033[1;36m{message} {chars[i % len(chars)]}\033[0m')
         sys.stdout.flush()
         time.sleep(0.1)
-    sys.stdout.write('\r' + ' ' * (len(message) + 2) + '\r')
+    print()
+
+def print_progress_bar(current, total, bar_length=50, title="Progress"):
+    """Display a progress bar"""
+    percent = float(current) * 100 / total
+    arrow = '-' * int(percent/100 * bar_length - 1) + '>'
+    spaces = ' ' * (bar_length - len(arrow))
+    
+    sys.stdout.write(f"\r\033[1;33m{title}: [{arrow}{spaces}] {percent:.1f}%\033[0m")
     sys.stdout.flush()
 
-def main():
-    """Main installation function"""
-    print_color("""
-╔══════════════════════════════════════════════════════════════╗
-║           UNIFIED SECURITY ANALYSIS TOOL                     ║
-║                  Python Installation                         ║
-╚══════════════════════════════════════════════════════════════╝
-    """, 'cyan')
+def print_menu():
+    """Print the main menu with animations"""
+    clear_screen()
+    print(BANNER)
     
-    print_color("\n[+] Setting up environment...", 'yellow')
+    print("\033[1;35m" + "▓" * 70 + "\033[0m")
+    print("\033[1;33m██\033[0m" + " " * 30 + "\033[1;32mMAIN CONTROL PANEL\033[0m" + " " * 30 + "\033[1;33m██\033[0m")
+    print("\033[1;35m" + "▓" * 70 + "\033[0m")
     
-    # Check Python version
-    if sys.version_info < (3, 6):
-        print_color("[-] Python 3.6+ required!", 'red')
-        sys.exit(1)
+    print("\n\033[1;36m    ⚡ [1]\033[0m \033[1;37mRUN TOOL\033[0m          \033[1;90m- Execute unified security suite\033[0m")
+    print("\033[1;36m    🔍 [2]\033[0m \033[1;37mABOUT\033[0m            \033[1;90m- View tool information and credits\033[0m")
+    print("\033[1;36m    🚪 [3]\033[0m \033[1;37mEXIT\033[0m             \033[1;90m- Leave the matrix\033[0m")
     
-    print_color("[+] Python version OK", 'green')
+    print("\n\033[1;35m" + "─" * 70 + "\033[0m")
     
-    # Create necessary directories
-    directories = ['logs', 'reports', 'temp']
-    for directory in directories:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-            print_color(f"[+] Created {directory} directory", 'green')
+    terminal_size = shutil.get_terminal_size().columns
+    print(f"\033[1;90m    System: {sys.platform.upper()} | Time: {datetime.now().strftime('%H:%M:%S')} | Terminal: {terminal_size} cols\033[0m")
+    print("\033[1;35m" + "─" * 70 + "\033[0m")
+
+def run_tool():
+    """Option 1: Automatically run the main tool with enhanced visualization"""
+    clear_screen()
+    print(BANNER)
+    print("\n\033[1;33m" + "="*70 + "\033[0m")
+    print("\033[1;32m🚀 LAUNCHING UNIFIED\033[0m".center(70))
+    print("\033[1;33m" + "="*70 + "\033[0m\n")
     
-    # Check platform-specific requirements
-    if platform.system() == "Linux":
-        print_color("[+] Linux detected", 'green')
-        # Check for libpcap (required for scapy)
+    print_animated("\033[1;36m[SYSTEM] Initializing security protocols...\033[0m")
+    time.sleep(0.5)
+    
+    if not os.path.exists(SRC_MAIN_DIR):
+        print(f"\n\033[1;31m[✗] CRITICAL ERROR: Directory '{SRC_MAIN_DIR}' not found!\033[0m")
+        print("\033[1;33m[!] Please ensure the src/main directory exists and try again.\033[0m")
+        input("\n\033[1;33mPress Enter to return to main menu...\033[0m")
+        return
+    
+    loading_animation("Scanning directory", 1)
+    
+    tool_script = None
+    possible_names = ['unified.py']
+    
+    for name in possible_names:
+        script_path = os.path.join(SRC_MAIN_DIR, name)
+        if os.path.isfile(script_path):
+            tool_script = script_path
+            print(f"\033[1;32m[✓] Found tool: {name}\033[0m")
+            time.sleep(0.3)
+            break
+    
+    if not tool_script:
+        scripts = [f for f in os.listdir(SRC_MAIN_DIR) 
+                  if f.endswith('.py') and os.path.isfile(os.path.join(SRC_MAIN_DIR, f))]
+        if scripts:
+            tool_script = os.path.join(SRC_MAIN_DIR, scripts[0])
+            print(f"\033[1;33m[!] Using first available script: {scripts[0]}\033[0m")
+            time.sleep(0.3)
+    
+    if not tool_script:
+        print(f"\n\033[1;31m[✗] No Python scripts found in {SRC_MAIN_DIR}\033[0m")
+        input("\n\033[1;33mPress Enter to return to main menu...\033[0m")
+        return
+    
+    print("\n\033[1;36m[INFO] Initializing tool components...\033[0m")
+    for i in range(101):
+        print_progress_bar(i, 100, title="\033[1;32mLoading")
+        time.sleep(0.01)
+    print("\n")
+    
+    print(f"\033[1;32m[✓] Tool loaded successfully!\033[0m")
+    print("\033[1;33m" + "─"*70 + "\033[0m")
+    print(f"\033[1;36m[EXECUTING] {os.path.basename(tool_script)}\033[0m")
+    print("\033[1;33m" + "─"*70 + "\033[0m\n")
+    
+    try:
+        if os.name != 'nt':  
+            os.chmod(tool_script, 0o755)
+        
+        result = subprocess.run([sys.executable, tool_script], 
+                              capture_output=False, 
+                              text=True)
+        
+        if result.returncode != 0:
+            print(f"\n\033[1;31m[✗] Tool exited with code {result.returncode}\033[0m")
+        else:
+            print(f"\n\033[1;32m[✓] Tool execution completed successfully!\033[0m")
+            
+    except Exception as e:
+        print(f"\n\033[1;31m[✗] Failed to run tool: {e}\033[0m")
+    
+    input("\n\033[1;33mPress Enter to return to main menu...\033[0m")
+
+def about():
+    """Enhanced about section with detailed information"""
+    clear_screen()
+    print(BANNER)
+    print("\n\033[1;35m" + "★"*70 + "\033[0m")
+    print("\033[1;33m📋 ABOUT UNIFIED SECURITY TOOL\033[0m".center(70))
+    print("\033[1;35m" + "★"*70 + "\033[0m\n")
+
+    about_script_path = os.path.join(SRC_MAIN_DIR, "about.py")
+    
+    if os.path.exists(about_script_path):
+        print_animated("\033[1;36m[INFO] Loading detailed information...\033[0m")
+        time.sleep(0.5)
+        print("\033[1;33m" + "─"*70 + "\033[0m\n")
+        
         try:
-            subprocess.run(["ldconfig", "-p"], capture_output=True, text=True)
-            print_color("[+] Network libraries found", 'green')
-        except:
-            print_color("[-] Warning: Some network features may be limited", 'yellow')
+            subprocess.run([sys.executable, about_script_path])
+        except Exception as e:
+            print(f"\n\033[1;31m[ERROR] Failed to run about script: {e}\033[0m")
+    else:
+        print(SKULL)
+        time.sleep(0.5)
+        
+        print("\033[1;36m╔══════════════════════════════════════════════════════════════╗\033[0m")
+        print("\033[1;36m║                    TOOL INFORMATION                          ║\033[0m")
+        print("\033[1;36m╚══════════════════════════════════════════════════════════════╝\033[0m\n")
+        
+        print("\033[1;33m📌 NAME:\033[0m \033[1;37mUNIFIED - Advanced Security Testing Framework\033[0m")
+        print("\033[1;33m📌 VERSION:\033[0m \033[1;37m2.0.0 (Quantum Edition)\033[0m")
+        print("\033[1;33m📌 RELEASE:\033[0m \033[1;37m2026\033[0m\n")
+        
+        print("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n")
+        
+        print("\033[1;32m🔷 DESCRIPTION:\033[0m")
+        print_animated("  A cutting-edge, all-in-one security assessment platform designed")
+        print_animated("  for elite penetration testers and security professionals. UNIFIED")
+        print_animated("  combines multiple security testing methodologies into a single,")
+        print_animated("  powerful interface with advanced automation capabilities.\n")
+        
+        print("\033[1;32m🔷 CORE FEATURES:\033[0m")
+        features = [
+            "⚡ Advanced Vulnerability Assessment & Scanning",
+            "🕸️ Web Application Security Testing",
+            "📊 Professional Report Generation",
+            "🤖 AI-Powered Threat Detection",
+        ]
+        
+        for feature in features:
+            print(f"  \033[1;37m{feature}\033[0m")
+            time.sleep(0.1)
+        
+        print("\n\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n")
+        
+        print("\033[1;32m🔷 TECHNICAL SPECIFICATIONS:\033[0m")
+        print("  \033[1;37m├─ Language:\033[0m Python 3.8+")
+        print("  \033[1;37m├─ Architecture:\033[0m Modular Plugin-Based")
+        print("  \033[1;37m├─ Database:\033[0m SQLite/PostgreSQL Support")
+        print("  \033[1;37m├─ API Support:\033[0m RESTful & GraphQL")
+        print("  \033[1;37m└─ Platforms:\033[0m Linux, macOS, Windows\n")
+        
+        print("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n")
+        
+        print("\033[1;32m🔷 REQUIREMENTS:\033[0m")
+        print("  \033[1;37m• Python 3.8 or higher\033[0m")
+        print("  \033[1;37m• 4GB RAM minimum (8GB recommended)\033[0m")
+        print("  \033[1;37m• 1GB free disk space\033[0m")
+        print("  \033[1;37m• Root/Admin privileges for某些功能\033[0m\n")
+        
+        print("\033[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n")
+        
+        print("\033[1;32m🔷 CREATED BY:\033[0m")
+        print("  \033[1;35m\033[0m")
+        print("  \033[1;35m\033[0m  \033[1;33mMarkhor (TEAM ATHEX)\033[0m                        \033[1;35m\033[0m")
+        print("  \033[1;35m \033[0m      Fixed and Maintained by TEAM ATHEX Leader ATHEX BLACK HAT\033[1;35m\033[0m")
+        print("  \033[1;35m\033[0m  \033[1;34mhttps://github.com/Athexhacker\033[0m                \033[1;35m\033[0m")
+        print("  \033[1;35m\033[0m\n")
+        
+        print("\033[1;32m🔷 LICENSE:\033[0m")
+        print("  \033[1;37mMIT License - Copyright (c) 2026 TEAM ATHEX BLACK HAT\033[0m")
+        print("  \033[1;90mFree to use, modify, and distribute with attribution\033[0m\n")
+        
+        print("\033[1;32m🔷 DISCLAIMER:\033[0m")
+        print("  \033[1;31m⚠️  This tool is for authorized security testing only!\033[0m")
+        print("  \033[1;31m   Users are responsible for compliance with applicable laws.\033[0m")
     
-    elif platform.system() == "Darwin":
-        print_color("[+] macOS detected", 'green')
-        # Check for libpcap on macOS
-        if os.path.exists("/usr/lib/libpcap.dylib"):
-            print_color("[+] Network libraries found", 'green')
+    print("\n\033[1;35m" + "★"*70 + "\033[0m")
+    input("\n\033[1;33mPress Enter to return to main menu...\033[0m")
+
+def exit_animation():
+    """Show exit animation"""
+    clear_screen()
+    print(BANNER)
+    print("\n\033[1;35m" + "="*70 + "\033[0m")
+    print("\033[1;33mThank you for using UNIFIED Security Tool!\033[0m".center(70))
+    print("\033[1;35m" + "="*70 + "\033[0m\n")
     
-    elif platform.system() == "Windows":
-        print_color("[+] Windows detected", 'green')
-        print_color("[+] Note: Network monitoring requires Npcap", 'yellow')
+    messages = [
+        "\033[1;36m[•] Clearing security protocols...\033[0m",
+        "\033[1;36m[•] Closing connections...\033[0m",
+        "\033[1;36m[•] Wiping temporary data...\033[0m",
+        "\033[1;32m[✓] System secured. Goodbye!\033[0m"
+    ]
     
-    loading_animation("[*] Finalizing installation")
+    for msg in messages:
+        print_animated(msg, 0.02)
+        time.sleep(0.3)
     
-    print_color("""
-    
-╔══════════════════════════════════════════════════════════════╗
-║                     INSTALLATION COMPLETE!                   ║
-╠══════════════════════════════════════════════════════════════╣
-║                                                              ║
-║   Run the tool with:  python3 security_tool.py               ║
-║                                                              ║
-║   For network monitoring (Linux/macOS):                      ║
-║   sudo python3 security_tool.py                              ║
-║                                                              ║
-║   Required dependencies are installed                        ║
-║   Check logs directory for output                            ║
-║                                                              ║
-╚══════════════════════════════════════════════════════════════╝
-    """, 'green')
-    
-    print_color("\n[+] Starting the tool now...", 'cyan')
-    time.sleep(2)
+    print("\n\033[1;35m" + "▄"*70 + "\033[0m")
+    time.sleep(1)
+
+def main():
+    """Main function with enhanced error handling"""
+    try:
+        clear_screen()
+        print(BANNER)
+        loading_animation("Initializing UNIFIED system", 2)
+        
+        while True:
+            print_menu()
+            
+            try:
+                choice = input("\n\033[1;36m[?] Enter your choice (1-3): \033[0m").strip()
+                
+                if choice == '1':
+                    run_tool()
+                elif choice == '2':
+                    about()
+                elif choice == '3':
+                    exit_animation()
+                    sys.exit(0)
+                else:
+                    print("\n\033[1;31m[✗] Invalid choice! Please enter 1, 2, or 3.\033[0m")
+                    time.sleep(1)
+                    
+            except (EOFError, KeyboardInterrupt):
+                print("\n\n\033[1;33m[!] Returning to main menu...\033[0m")
+                time.sleep(1)
+                continue
+                
+    except KeyboardInterrupt:
+        exit_animation()
+        sys.exit(0)
+    except Exception as e:
+        print(f"\n\033[1;31m[CRITICAL ERROR] {e}\033[0m")
+        print("\033[1;33mPlease report this issue to the developer.\033[0m")
+        time.sleep(3)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
@@ -454,10 +657,10 @@ print_step "🚀 FINAL INSTALLATION"
 echo -e "${CYAN}Running Python installation script...${NC}\n"
 python3 install.py
 
-if [ ! -f "security_tool.py" ] && [ ! -f "unified_security_tool.py" ]; then
+if [ ! -f "install.py" ] && [ ! -f "install.py" ]; then
     print_warning "Main tool file not found in current directory"
-    print_info "Please ensure your security tool Python file is in this directory"
-    print_info "Expected filename: security_tool.py or unified_security_tool.py"
+    print_info "Please ensure your install.py Python file is in this directory"
+    print_info "Expected filename: install.py"
     
     echo -ne "\n${YELLOW}Enter the filename of your security tool (or press Enter to skip): ${NC}"
     read -r tool_file
@@ -484,16 +687,6 @@ cat << "EOF"
     ║                      🎉 INSTALLATION COMPLETE! 🎉                ║
     ║                                                                   ║
     ╠═══════════════════════════════════════════════════════════════════╣
-    ║                                                                   ║
-    ║   🌐 Web Scanner:    python3 security_tool.py                     ║
-    ║   📡 Network Monitor: sudo python3 security_tool.py               ║
-    ║   📊 Reports:        ./reports/                                   ║
-    ║   📝 Logs:           ./logs/                                      ║
-    ║                                                                   ║
-    ║   🔧 Quick Start:                                                 ║
-    ║   $ python3 security_tool.py                                      ║
-    ║                                                                   ║
-    ╚═══════════════════════════════════════════════════════════════════╝
 EOF
 echo -e "${NC}"
 
