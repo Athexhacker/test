@@ -1,0 +1,7 @@
+scapy
+beautifulsoup4
+cryptography
+dnspython
+requests
+colorama
+tqdm
