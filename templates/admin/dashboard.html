@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spy | Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@latest/css/flag-icons.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-dark: #1a1c23;
+            --bg-light: #252830;
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --text-light: #f5f6fa;
+            --text-muted: #a4b0be;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            margin: 0;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: var(--bg-light);
+            padding: 1.5rem 1rem;
+            height: 100vh;
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .sidebar-header h2 {
+            color: var(--primary);
+            margin: 0;
+        }
+        .sidebar-nav {
+            flex-grow: 1;
+        }
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .sidebar-nav a.active, .sidebar-nav a:hover {
+            background-color: var(--primary);
+            color: var(--text-light);
+        }
+        .sidebar-nav a i {
+            margin-right: 1rem;
+            width: 20px;
+        }
+        .main-content {
+            margin-left: 250px;
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background-color: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .card .icon {
+            font-size: 2.5rem;
+            padding: 1rem;
+            border-radius: 50%;
+            background-color: rgba(108, 92, 231, 0.2);
+            color: var(--primary);
+        }
+        .card .info h3 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        .card .info p {
+            margin: 0;
+            color: var(--text-muted);
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Changed to a single column for a larger map */
+            gap: 1.5rem;
+        }
+        .map-container, .recent-clients-container {
+            background-color: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+        #map {
+            height: 550px; /* Increased map height */
+            border-radius: 6px;
+            background-color: #333;
+        }
+        .recent-clients-container h2 {
+            margin-top: 0;
+        }
+        .client-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .client-list li {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #333;
+        }
+        .client-list li:last-child {
+            border-bottom: none;
+        }
+        .client-list .flag {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+        .client-list .details {
+            flex-grow: 1;
+        }
+        .client-list .details p {
+            margin: 0;
+        }
+        .client-list .details .location {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .client-list .view-btn {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+            background: var(--bg-light);
+            color: var(--text-light);
+        }
+        .leaflet-popup-content a {
+            color: var(--secondary);
+        }
+        /* --- NEW: Pulsing animation for GPS markers --- */
+        @keyframes pulse-gps {
+            0% {
+                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(46, 204, 113, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+            }
+        }
+        .gps-marker-icon {
+            background-color: var(--success);
+            border-radius: 50%;
+            width: 12px;
+            height: 12px;
+            border: 2px solid white;
+            box-shadow: 0 0 0 rgba(46, 204, 113, 0.4);
+            animation: pulse-gps 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-user-secret"></i> Spy Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="{{ url_for('admin_dashboard') }}" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('admin_clients') }}"><i class="fas fa-users"></i> Clients</a></li>
+                <li><a href="{{ url_for('admin_analytics') }}"><i class="fas fa-chart-pie"></i> Analytics</a></li>
+                <li><a href="{{ url_for('admin_settings') }}"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <ul>
+                <li><a href="{{ url_for('admin_logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <h1>Dashboard</h1>
+        </header>
+
+        <div class="stats-cards">
+            <div class="card">
+                <div class="icon"><i class="fas fa-users"></i></div>
+                <div class="info">
+                    <h3 id="total-clients">0</h3>
+                    <p>Total Clients</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="icon"><i class="fas fa-globe-americas"></i></div>
+                <div class="info">
+                    <h3 id="total-countries">0</h3>
+                    <p>Countries</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="icon"><i class="fas fa-city"></i></div>
+                <div class="info">
+                    <h3 id="total-cities">0</h3>
+                    <p>Cities</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="icon"><i class="fas fa-laptop"></i></div>
+                <div class="info">
+                    <h3 id="total-os">0</h3>
+                    <p>OS Types</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="map-container">
+                <h2>Client Locations</h2>
+                <div id="map"></div>
+            </div>
+            <div class="recent-clients-container">
+                <h2>Recent Clients</h2>
+                <ul class="client-list" id="recent-clients-list">
+                    <!-- Populated by JS -->
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the map
+        var map = L.map('map').setView([20, 0], 2);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        function fetchData() {
+            // --- CORRECTED API ENDPOINT ---
+            fetch('/api/dashboard_data')
+                .then(response => response.json())
+                .then(data => {
+                    // --- CORRECTED DATA ACCESS ---
+                    const clients = data.clients;
+                    const stats = data.stats;
+
+                    // Update stats cards
+                    document.getElementById('total-clients').textContent = stats.total_clients;
+                    document.getElementById('total-countries').textContent = stats.total_countries;
+                    document.getElementById('total-cities').textContent = stats.total_cities;
+                    document.getElementById('total-os').textContent = stats.total_os_types;
+
+                    // Clear existing map markers and client list
+                    map.eachLayer(function (layer) {
+                        if (!!layer.toGeoJSON) {
+                            map.removeLayer(layer);
+                        }
+                    });
+                    const clientList = document.getElementById('recent-clients-list');
+                    clientList.innerHTML = '';
+
+                    // Populate map and recent clients list
+                    clients.forEach((client, index) => {
+                        // --- NEW: Create a user-friendly victim ID ---
+                        const victimId = `Victim ${clients.length - index}`;
+
+                        // --- NEW: Differentiate between GPS and IP location ---
+                        if (client.gps_latitude && client.gps_longitude) {
+                            // Precise GPS location: show a pulsing green marker
+                            const gpsIcon = L.divIcon({ className: 'gps-marker-icon' });
+                            const marker = L.marker([client.gps_latitude, client.gps_longitude], { icon: gpsIcon }).addTo(map);
+                            
+                            let popupContent = `<b>Client:</b> ${victimId}<br>
+                                                <b>Location:</b> ${client.city}, ${client.country}<br>
+                                                <b>Source:</b> <span style="color: var(--success);">GPS (Live)</span><br>
+                                                <a href="/admin/client/${client.id}" target="_blank">View Details</a>`;
+                            
+                            if (client.photos && client.photos.length > 0) {
+                                popupContent += `<br><img src="/data/${client.id}/${client.photos[0]}" alt="photo" width="150" style="margin-top:10px; border-radius:4px;">`;
+                            }
+                            marker.bindPopup(popupContent);
+
+                        } else if (client.ip_latitude && client.ip_longitude) {
+                            // IP-based location: show a circle with 10km radius
+                            let popupContent = `<b>Client:</b> ${victimId}<br>
+                                                <b>Location:</b> ${client.city}, ${client.country}<br>
+                                                <b>Source:</b> <span style="color: var(--danger);">IP Address (Approx.)</span><br>
+                                                <a href="/admin/client/${client.id}" target="_blank">View Details</a>`;
+
+                            if (client.photos && client.photos.length > 0) {
+                                popupContent += `<br><img src="/data/${client.id}/${client.photos[0]}" alt="photo" width="150" style="margin-top:10px; border-radius:4px;">`;
+                            }
+
+                            const circle = L.circle([client.ip_latitude, client.ip_longitude], {
+                                color: 'var(--danger)',
+                                fillColor: 'var(--danger)',
+                                fillOpacity: 0.3,
+                                radius: 10000 // 10km in meters
+                            }).addTo(map);
+                            
+                            // Add a small marker in the center of the circle for the popup
+                            const centerMarker = L.circleMarker([client.ip_latitude, client.ip_longitude], {
+                                radius: 4,
+                                color: 'var(--danger)',
+                                weight: 2,
+                                opacity: 1,
+                                fillOpacity: 0.8,
+                                pane: 'markerPane' // Ensure it's clickable
+                            }).addTo(map);
+                            centerMarker.bindPopup(popupContent);
+                        }
+                        // --- END NEW ---
+
+                        // Add to recent clients list (max 5)
+                        if (index < 5) {
+                            const listItem = document.createElement('li');
+                            // --- MODIFIED: Use victimId in recent clients list ---
+                            listItem.innerHTML = `
+                                <div class="flag">
+                                    <span class="fi fi-${client.country.toLowerCase()}"></span>
+                                </div>
+                                <div class="details">
+                                    <p>${victimId}</p>
+                                    <p class="location">${client.city}, ${client.country}</p>
+                                </div>
+                                <a href="/admin/client/${client.id}" class="view-btn">View</a>
+                            `;
+                            clientList.appendChild(listItem);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching dashboard data:', error);
+                    const mapContainer = document.getElementById('map');
+                    mapContainer.innerHTML = '<p style="color: var(--danger); text-align: center;">Could not load map data. Is the server running?</p>';
+                });
+        }
+
+        // Fetch data on load and then every 10 seconds
+        fetchData();
+        setInterval(fetchData, 10000);
+    });
+    </script>
+</body>
+</html>

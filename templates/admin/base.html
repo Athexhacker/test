@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Panel{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    {% block head_extra %}{% endblock %}
+    <style>
+        :root {
+            --primary: #00ff41; /* neon green */
+            --secondary: #66ff99;
+            --muted: #07110a;
+            --panel: rgba(0,0,0,0.6);
+            --accent: #7aff8f;
+            --danger: #ff4d6d;
+            --sidebar-width: 250px;
+            --header-height: 70px;
+            --transition: all 0.16s cubic-bezier(.2,.9,.2,1);
+            --glass: rgba(255,255,255,0.02);
+            --scanline: rgba(0,255,65,0.02);
+        }
+
+        * { box-sizing: border-box; margin:0; padding:0; font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; }
+
+        body {
+            background: radial-gradient(ellipse at center, #07110a 0%, #000 70%);
+            color: var(--primary);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset:0; z-index:0;
+            background-image: repeating-linear-gradient(180deg, rgba(0,0,0,0) 0 1px, rgba(0,0,0,0.02) 1px 2px), linear-gradient(90deg, rgba(0,255,65,0.02), rgba(0,255,65,0.00));
+            pointer-events: none; mix-blend-mode: screen; opacity:0.7;
+        }
+
+        body::after {
+            content: '';
+            position: fixed; inset:0; z-index:0;
+            background-image: repeating-linear-gradient(0deg, rgba(0,255,65,0.015) 0 2px, transparent 2px 14px);
+            filter: blur(6px);
+            opacity:0.4;
+            animation: flow 12s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes flow { from { background-position: 0 0 } to { background-position: 0 -600px } }
+
+        .dashboard-container { display:flex; min-height:100vh; position:relative; z-index:1; }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, rgba(0,0,0,0.88), rgba(2,6,2,0.94));
+            color: var(--primary);
+            height:100vh; position:fixed; left:0; top:0; padding:18px 12px; box-shadow: 0 0 24px rgba(0,255,65,0.03) inset; transition: var(--transition); z-index:1000; border-right:1px solid rgba(0,255,65,0.04);
+        }
+
+        .sidebar-header { padding:0 12px 14px; border-bottom:1px solid rgba(0,255,65,0.03); margin-bottom:14px }
+        .sidebar-header h2 { display:flex; align-items:center; gap:10px; font-size:1.28rem; color:var(--primary); letter-spacing:0.6px }
+        .sidebar-header h2 i { width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:8px; color:var(--primary); border:1px solid rgba(0,255,65,0.06); background: rgba(0,0,0,0.25) }
+
+        .sidebar-menu { list-style:none; padding:6px 6px }
+        .sidebar-menu a { color: rgba(0,255,65,0.86); display:flex; align-items:center; padding:10px 12px; border-radius:6px; text-decoration:none; transition: var(--transition); font-weight:600 }
+        .sidebar-menu a:hover, .sidebar-menu a.active { background: rgba(0,255,65,0.03); color:var(--accent); text-shadow:0 0 8px rgba(0,255,65,0.16) }
+
+        .main-content { flex:1; margin-left:var(--sidebar-width); padding:22px; transition: var(--transition); z-index:2 }
+
+        /* Header with blinking cursor like a terminal */
+        .header { display:flex; justify-content:space-between; align-items:center; background: linear-gradient(180deg, rgba(0,0,0,0.62), rgba(0,0,0,0.46)); padding:12px 18px; border-radius:10px; border:1px solid rgba(0,255,65,0.04); box-shadow:0 6px 22px rgba(0,0,0,0.6); margin-bottom:20px; height:var(--header-height); }
+        .header h1 { color:var(--primary); font-size:1.56rem; display:flex; align-items:center; gap:10px; position:relative }
+        .header h1::after { content: ' ▌'; margin-left:6px; color:var(--primary); animation: blink 1s steps(2,start) infinite }
+        @keyframes blink { 0% { opacity:1 } 50% { opacity:0 } 100% { opacity:1 } }
+
+        .user-actions { display:flex; align-items:center; gap:12px }
+        .search-box { position:relative }
+        .search-box input { padding:10px 14px 10px 38px; border:1px solid rgba(0,255,65,0.06); border-radius:8px; width:320px; background: rgba(0,0,0,0.62); color:var(--primary); transition:var(--transition); }
+        .search-box input:focus { outline:none; box-shadow:0 0 14px rgba(0,255,65,0.12); border-color: rgba(0,255,65,0.18) }
+        .search-box i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color: rgba(0,255,65,0.46) }
+
+        .logout-btn { background:transparent; color:var(--primary); border:1px solid rgba(0,255,65,0.08); padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:700 }
+        .logout-btn:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,255,65,0.06); color:var(--accent) }
+        
+        .footer { text-align:center; padding:20px; margin-top:32px; color: rgba(0,255,65,0.45); font-size:0.9rem; border-top:1px solid rgba(0,255,65,0.02) }
+
+        {% block extra_styles %}{% endblock %}
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-chart-line"></i> AdminPanel</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="/admin/dashboard" class="{{ 'active' if request.path == url_for('admin_dashboard') else '' }}"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="/admin/clients" class="{{ 'active' if request.path == url_for('admin_clients') else '' }}"><i class="fas fa-users"></i> Clients</a></li>
+                <li><a href="/admin/analytics" class="{{ 'active' if request.path == url_for('admin_analytics') else '' }}"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                <li><a href="/admin/settings" class="{{ 'active' if request.path == '/admin/settings' else '' }}"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="https://github.com/Juttstodio/Spy/blob/main/README.md" target="_blank"><i class="fas fa-question-circle"></i> Help</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            {% block content %}{% endblock %}
+            <div class="footer">
+                <p>© {{ now().year }} Admin Dashboard | JS 😈 Management System</p>
+            </div>
+        </div>
+    </div>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

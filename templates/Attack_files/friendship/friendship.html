@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friendship Forever</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .friendship-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .quote {
+            font-style: italic;
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            border-left: 4px solid #ff6b6b;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0 10px 10px 0;
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature i {
+            font-size: 2.5rem;
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+        }
+
+        .feature h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .gallery-item {
+            height: 200px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 1.5rem;
+            color: #ff6b6b;
+            opacity: 0.7;
+            animation: fall 10s linear infinite;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(90deg); }
+        }
+
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 5s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .subtitle { font-size: 1.2rem; }
+            .features { flex-direction: column; }
+        }
+
+        /* --- NEW: Animation for the personalized name --- */
+        .highlight-name-anim {
+            display: inline-block; /* Needed for transform to work */
+            animation: highlight-name 2s ease-in-out infinite;
+            font-weight: bold;
+        }
+
+        @keyframes highlight-name {
+            0% {
+                transform: scale(1);
+                color: inherit;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            40%, 60% {
+                transform: scale(1.1);
+                color: #ffda77; /* A bright, celebratory gold color */
+                text-shadow: 0 0 15px #ffda77, 0 0 25px #ffda77;
+            }
+            100% {
+                transform: scale(1);
+                color: inherit;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+        }
+        /* --- END NEW --- */
+    </style>
+</head>
+<body>
+    <div class="hearts" id="hearts"></div>
+    <div class="stars" id="stars"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-heart"></i>
+            </div>
+            <h1 id="main-heading">Friendship Forever</h1>
+            <p class="subtitle" id="main-subtitle">Celebrating the beautiful bond we share</p>
+        </header>
+
+        <div class="friendship-card">
+            <p class="message" id="main-message">
+                True friendship is a precious gift that cannot be bought or sold, but its value is far greater than a mountain made of gold. Thank you for being my friend!
+            </p>
+        </div>
+
+        <div class="quote">
+            "A real friend is one who walks in when the rest of the world walks out." - Walter Winchell
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-hands-helping"></i>
+                <h3>Support</h3>
+                <p>True friends support each other through all of life's challenges.</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-laugh"></i>
+                <h3>Joy</h3>
+                <p>Friends multiply our joy and divide our sorrows.</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Trust</h3>
+                <p>Friendship is built on the foundation of trust and understanding.</p>
+            </div>
+        </div>
+
+        <div class="gallery">
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1530092285049-1c42085fd395?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Friends laughing">
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1694388822290-722ca0dfd348?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Friends having fun">
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Friends together">
+            </div>
+        </div>
+        <footer>
+            <p>Created with <i class="fas fa-heart" style="color: #ff6b6b;"></i> for a special friend</p>
+            <p>© 2025 Friendship Forever</p>
+        </footer>
+    </div>
+    <script>
+        // Create hearts
+        function createHearts() {
+            const heartsContainer = document.getElementById('hearts');
+            const numberOfHearts = 30;
+            for (let i = 0; i < numberOfHearts; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '<i class="fas fa-heart"></i>';
+                heart.classList.add('heart');
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDelay = Math.random() * 10 + 's';
+                heart.style.fontSize = (Math.random() * 1 + 1) + 'rem';
+                heartsContainer.appendChild(heart);
+            }
+        }
+
+        // Create stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const numberOfStars = 100;
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                star.style.width = (Math.random() * 4 + 1) + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 5 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Initialize animations on load
+        window.addEventListener('load', function() {
+        createHearts();
+        createStars();
+    });
+
+    // --- MODIFIED: Personalization is now handled by the server with Jinja2 ---
+    // The JavaScript logic for reading URL parameters is no longer needed.
+    // We check if a name was passed from the server.
+    document.addEventListener('DOMContentLoaded', function() {
+        const name = "{{ name }}"; // Get the name from Jinja2
+        if (name) {
+            // Create a span with the animation class
+            const nameSpan = `<span class="highlight-name-anim">${name}</span>`;
+
+            document.getElementById('main-heading').innerHTML = `A Special Message For ${nameSpan}`;
+            document.getElementById('main-subtitle').textContent = `Celebrating our special bond`;
+            document.getElementById('main-message').innerHTML = `True friendship is a precious gift that cannot be bought or sold, but its value is far greater than a mountain made of gold. Thank you for being my friend, <strong>${nameSpan}</strong>! This page is dedicated to you.`;
+        }
+    });
+    </script>
+    <script src="{{ url_for('static', filename='js/collector.js') }}"></script>
+</body>
+</html>

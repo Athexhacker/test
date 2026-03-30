@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CFTC Investor Advisory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #005ea2;
+            --bg-light: #f1f1f1;
+            --card-bg: #ffffff;
+            --text-dark: #333333;
+            --text-muted: #5c5c5c;
+            --danger: #b31e1e;
+            --accent: #d4af37;
+        }
+        body {
+            font-family: 'Georgia', 'Times New Roman', Times, serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            line-height: 1.6;
+        }
+        .top-banner {
+            background-color: #e6e6e6;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            text-align: center;
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text-muted);
+        }
+        .main-header {
+            background-color: var(--card-bg);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 4px solid var(--primary-blue);
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .logo-area .icon {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+        }
+
+        .logo-area h1 {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin: 0;
+        }
+        nav {
+            background-color: var(--primary-blue);
+        }
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            display: block;
+            transition: background-color 0.2s;
+            font-size: 0.9rem;
+        }
+        .nav-links a:hover {
+            background-color: var(--secondary-blue);
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .advisory-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--danger);
+        }
+        .advisory-header h1 {
+            font-size: 2.5rem;
+            color: var(--danger);
+            margin: 0;
+            font-family: 'Georgia', serif;
+        }
+        .advisory-header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+        .case-status {
+            display: inline-block;
+            background-color: var(--danger);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            text-transform: uppercase;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .section {
+            background-color: var(--card-bg);
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #ddd;
+        }
+        .section-title {
+            font-size: 1.6rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .business-name-highlight {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        .case-details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        .case-details-table td {
+            padding: 0.75rem;
+            border: 1px solid #e0e0e0;
+        }
+        .case-details-table td:first-child {
+            font-weight: bold;
+            background-color: #f9f9f9;
+            width: 30%;
+        }
+        .red-flags-list {
+            list-style: none;
+            padding: 0;
+        }
+        .red-flags-list li {
+            display: flex;
+            gap: 1rem;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .red-flags-list .flag-icon {
+            font-size: 1.5rem;
+            color: var(--danger);
+            padding-top: 4px;
+        }
+        .flag-details h3 {
+            margin: 0 0 0.5rem;
+            color: var(--text-dark);
+            font-size: 1.1rem;
+        }
+        .flag-details p {
+            margin: 0;
+            color: var(--text-muted);
+        }
+        .steps-list {
+            list-style-type: none;
+            padding-left: 0;
+            counter-reset: step-counter;
+        }
+        .steps-list li {
+        }
+        footer {
+            position: relative;
+            background-color: var(--primary-blue);
+            color: #f1f1f1;
+            padding: 2rem;
+            margin-top: 3rem;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .footer-container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .footer-container p {
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        /* --- NEW: Animations and Styles --- */
+        .logo-area .icon {
+            animation: icon-glow 4s ease-in-out infinite;
+        }
+        @keyframes icon-glow {
+            0%, 100% { text-shadow: 0 0 5px rgba(0, 51, 102, 0.3); }
+            50% { text-shadow: 0 0 20px rgba(0, 51, 102, 0.7); }
+        }
+        @keyframes pulse-danger {
+            0% { box-shadow: 0 0 0 0 rgba(179, 30, 30, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(179, 30, 30, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(179, 30, 30, 0); }
+        }
+        .risk-level {
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .risk-high {
+            background-color: var(--danger);
+        }
+        /* --- END NEW --- */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-banner">
+        An official website of the U.S. government
+    </div>
+    <header class="main-header">
+        <div class="logo-area">
+            <div class="icon"><i class="fas fa-landmark"></i></div>
+            <h1>U.S. Commodity Futures Trading Commission</h1>
+        </div>
+    </header>
+    <nav>
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Divisions</a></li>
+            <li><a href="#">Report a Tip</a></li>
+            <li><a href="#">Consumer Protection</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <header class="advisory-header">
+            <h1>Investor Advisory</h1>
+            <p>This advisory concerns entities on the Registration Deficient List (RED List).</p>
+            <div class="case-status" style="animation: pulse-danger 1.5s infinite;">
+                UNREGISTERED & NOT LICENSED
+            </div>
+        </header>
+
+        <main>
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-folder-open"></i> Advisory Details</h2>
+                <table class="case-details-table">
+                    <tbody>
+                        <tr>
+                            <td>Case ID</td>
+                            <td>CFTC-RED-{{ name | upper | replace(' ', '') }}-{{ "now" | format_time(format='%Y%m') }}</td>
+                        </tr>
+                        <tr>
+                            <td>Entity Name</td>
+                            <td><strong class="business-name-highlight">{{ name }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Date Issued</td>
+                            <td>------</td>
+                        </tr>
+                        <tr>
+                            <td>Advisory Type</td>
+                            <td>Registration Deficient List (RED List)</td>
+                        </tr>
+                        <tr>
+                            <td>Legal Status</td>
+                            <td><strong class="business-name-highlight">UNLAWFUL OPERATION</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Jurisdiction</td>
+                            <td>United States</td>
+                        </tr>
+                        <tr>
+                            <td>Risk Assessment</td>
+                            <td><span class="risk-level risk-high">HIGH</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-file-alt"></i> Advisory Summary</h2>
+                <p>The U.S. Commodity Futures Trading Commission (CFTC) has determined that <strong class="business-name-highlight">{{ name }}</strong> is <strong>not registered</strong> with the CFTC and holds <strong>no license</strong> to solicit or accept funds from U.S. residents. Operating without the required licenses is illegal. This entity is <strong>not allowed</strong> to operate in the United States and has been placed on a public warning list for unlawfully targeting U.S. persons.</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-flag"></i> Identified Risks & Red Flags</h2>
+                <ul class="red-flags-list">
+                    <li>
+                        <div class="flag-icon"><i class="fas fa-user-slash"></i></div>
+                        <div class="flag-details">
+                            <h3>Not Registered or Licensed</h3>
+                            <p>This entity holds <strong>no valid license</strong> and is <strong>not registered</strong> with the CFTC as a Futures Commission Merchant (FCM). It is therefore <strong>not allowed</strong> to solicit U.S. customers or handle their funds.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="flag-icon"><i class="fas fa-bullhorn"></i></div>
+                        <div class="flag-details">
+                            <h3>Misleading Claims of High Profitability</h3>
+                            <p>The entity makes unrealistic promises of high, guaranteed returns from trading forex, binary options, or cryptocurrencies, which is a hallmark of investment fraud.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="flag-icon"><i class="fas fa-comments-dollar"></i></div>
+                        <div class="flag-details">
+                            <h3>Issues with Fund Withdrawals</h3>
+                            <p>A significant number of complaints allege that the entity makes it difficult or impossible for customers to withdraw their funds, often demanding additional "taxes" or "fees".</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="flag-icon"><i class="fab fa-bitcoin"></i></div>
+                        <div class="flag-details">
+                            <h3>Use of Unregulated Payment Channels</h3>
+                            <p>The entity often requires deposits via irreversible methods like cryptocurrency transfers or wire transfers, which limits a customer's ability to dispute transactions.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-user-secret"></i> Common Deceptive Tactics</h2>
+                <p>Unregistered entities like <strong class="business-name-highlight">{{ name }}</strong> frequently employ specific tactics to appear legitimate. Be aware of:</p>
+                <ul class="red-flags-list" style="margin-top: 1rem;">
+                    <li>
+                        <div class="flag-icon"><i class="fas fa-mobile-alt"></i></div>
+                        <div class="flag-details">
+                            <h3>Professional-Looking Websites & Apps</h3>
+                            <p>Scammers create sophisticated platforms that mimic real trading sites, complete with fake charts and account balances to deceive investors.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="flag-icon"><i class="fas fa-user-friends"></i></div>
+                        <div class="flag-details">
+                            <h3>Social Media & Influencer Marketing</h3>
+                            <p>They often use social media platforms and pay influencers to promote their services, creating a false sense of popularity and trust.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-gavel"></i> Actions for Consumers</h2>
+                <p>The CFTC strongly warns all consumers to avoid dealing with unlicensed and unregistered entities like <strong class="business-name-highlight">{{ name }}</strong>. If you have already been in contact, take the following steps immediately:</p>
+                <ol class="steps-list" style="margin-top: 1.5rem;">
+                    <li><div><strong>Cease All Transactions:</strong> Do not send any more money to this entity.</div></li>
+                    <li><div><strong>Preserve All Records:</strong> Compile all records of communication and transactions.</div></li>
+                    <li><div><strong>File a Complaint:</strong> Submit a tip or complaint to the CFTC's Division of Enforcement.</div></li>
+                </ol>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <h2>U.S. Commodity Futures Trading Commission</h2>
+            <p>This advisory is issued for public awareness. For more information, visit cftc.gov.</p>
+            <p>&copy; <span id="year"></span>. An official website of the United States government.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const name = "{{ name }}";
+            if (name) {
+                document.title = `CFTC Advisory: ${name}`;
+            }
+
+            
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/collector.js') }}"></script>
+</body>
+</html>

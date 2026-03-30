@@ -1,0 +1,65 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Analytics Overview{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .analytics-card { background: rgba(0,0,0,0.5); border-radius:10px; padding:18px; animation: fadeIn 0.45s ease 0.08s both; overflow:hidden; border:1px solid rgba(0,255,65,0.03); backdrop-filter: blur(6px) }
+    .analytics-card h2 { margin-bottom:14px; color:var(--primary); display:flex; align-items:center; gap:10px }
+    .analytics-card ul { list-style: none; padding: 0; }
+    .analytics-card ul li { padding: 8px 0; border-bottom: 1px dashed rgba(0,255,65,0.06); color: var(--primary); }
+    .analytics-card ul li:last-child { border-bottom: none; }
+    .analytics-card h3 { color: var(--accent); margin-bottom: 10px; font-size: 1.1rem; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="header">
+    <h1><i class="fas fa-chart-pie"></i> Analytics Overview</h1>
+    <div class="user-actions">
+        <a href="/admin/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+</div>
+
+<!-- Analytics Section -->
+<div class="analytics-card">
+    <h2><i class="fas fa-chart-pie"></i> Data Breakdown</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        <div>
+            <h3>Top Countries</h3>
+            <ul>
+                {% for country, count in top_countries %}
+                    <li>{{ country }}: {{ count }} clients</li>
+                {% endfor %}
+                {% if not top_countries %}
+                    <li>No country data available.</li>
+                {% endif %}
+            </ul>
+        </div>
+        <div>
+            <h3>Top Cities</h3>
+            <ul>
+                {% for city, count in top_cities %}
+                    <li>{{ city }}: {{ count }} clients</li>
+                {% endfor %}
+                {% if not top_cities %}
+                    <li>No city data available.</li>
+                {% endif %}
+            </ul>
+        </div>
+        <div>
+            <h3>OS Breakdown</h3>
+            <ul>
+                {% for os, count in os_breakdown %}
+                    <li>{{ os }}: {{ count }} clients</li>
+                {% endfor %}
+                {% if not os_breakdown %}
+                    <li>No OS data available.</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

