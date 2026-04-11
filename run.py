@@ -219,7 +219,7 @@ def display_menu():
     """Display the main menu with options"""
     print(f"\n{Colors.BOLD}{Colors.UNDERLINE}🎮 MAIN MENU{Colors.ENDC}\n")
     print(f"{Colors.GREEN}1.{Colors.ENDC} Telegram-Based")
-    print(f"{Colors.GREEN}2.{Colors.ENDC}  Web-Based")
+    print(f"{Colors.GREEN}2.{Colors.ENDC} Web-Based")
     print(f"{Colors.GREEN}3.{Colors.ENDC} View Documentation")
     print(f"{Colors.GREEN}4.{Colors.ENDC} Exit")
     print()
@@ -271,9 +271,9 @@ def main():
         choice = input(f"{Colors.BOLD}Select an option [1-4]: {Colors.ENDC}").strip()
         
         if choice == '1':
-            run_script("Src/telegram-based", "First Option")
+            run_script("Src/telegram-based.py", "First Option")
         elif choice == '2':
-            run_script("Src/ghostqr", "Second Option")
+            run_script("Src/ghostqr.py", "Second Option")
         elif choice == '3':
             view_documentation()
         elif choice == '4':
