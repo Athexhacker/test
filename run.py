@@ -207,8 +207,8 @@ def view_documentation():
     else:
         print(f"{Colors.YELLOW}No documentation file found.{Colors.ENDC}")
         print("Available options:")
-        print("  • Execute First Option: Run src/run.py")
-        print("  • Execute Second Option: Run src/main.py")
+        print("  • Telegram-Based")
+        print("  • Web-Based")
         print("  • View Documentation: Display this help")
         print("  • Exit: Close the application")
         print("\nFor more information, please check the project's README or documentation files.")
@@ -218,8 +218,8 @@ def view_documentation():
 def display_menu():
     """Display the main menu with options"""
     print(f"\n{Colors.BOLD}{Colors.UNDERLINE}🎮 MAIN MENU{Colors.ENDC}\n")
-    print(f"{Colors.GREEN}1.{Colors.ENDC} Execute First Option (src/run.py)")
-    print(f"{Colors.GREEN}2.{Colors.ENDC} Execute Second Option (src/main.py)")
+    print(f"{Colors.GREEN}1.{Colors.ENDC} Telegram-Based")
+    print(f"{Colors.GREEN}2.{Colors.ENDC}  Web-Based")
     print(f"{Colors.GREEN}3.{Colors.ENDC} View Documentation")
     print(f"{Colors.GREEN}4.{Colors.ENDC} Exit")
     print()
@@ -244,20 +244,20 @@ def main():
     install_dependencies()
     
     # Create src directory if it doesn't exist
-    if not Path("src").exists():
+    if not Path("Src").exists():
         Path("src").mkdir()
-        print_status("Created 'src' directory", "SUCCESS")
+        print_status("Created 'Src' directory", "SUCCESS")
         
         # Create example files if they don't exist
-        if not Path("src/run.py").exists():
-            with open("src/run.py", 'w') as f:
+        if not Path("Src/run.py").exists():
+            with open("Src/run.py", 'w') as f:
                 f.write('#!/usr/bin/env python3\nprint("Hello from run.py!")')
-            print_status("Created example src/run.py", "INFO")
+            print_status("Created example Src/run.py", "INFO")
         
-        if not Path("src/main.py").exists():
-            with open("src/main.py", 'w') as f:
+        if not Path("Src/main.py").exists():
+            with open("Src/main.py", 'w') as f:
                 f.write('#!/usr/bin/env python3\nprint("Hello from main.py!")')
-            print_status("Created example src/main.py", "INFO")
+            print_status("Created example Src/main.py", "INFO")
     
     # Create example requirements.txt if not exists
     if not Path("requirements.txt").exists():
@@ -271,9 +271,9 @@ def main():
         choice = input(f"{Colors.BOLD}Select an option [1-4]: {Colors.ENDC}").strip()
         
         if choice == '1':
-            run_script("src/run.py", "First Option")
+            run_script("Src/telegram-based", "First Option")
         elif choice == '2':
-            run_script("src/main.py", "Second Option")
+            run_script("Src/ghostqr", "Second Option")
         elif choice == '3':
             view_documentation()
         elif choice == '4':
