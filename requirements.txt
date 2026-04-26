@@ -1,0 +1,9 @@
+#     INJECTOR-X - Minimal Requirements        
+requests
+colorama
+aiohttp
+git
+curl
+openssl
+jinja2
+openpyxl
