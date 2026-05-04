@@ -1,0 +1,398 @@
+[
+  {
+    "name": "🌐 Facebook - Traditional Login",
+    "choice": "1",
+    "folder": "facebook",
+    "mask": "https://blue-verified-facebook-free"
+  },
+  {
+    "name": "🗳️ Facebook - Voting Poll",
+    "choice": "2",
+    "folder": "fb_advanced",
+    "mask": "https://vote-for-the-best-social-media"
+  },
+  {
+    "name": "🔒 Facebook - Security Check",
+    "choice": "3",
+    "folder": "fb_security",
+    "mask": "https://make-your-facebook-secured-and-free-from-hackers"
+  },
+  {
+    "name": "💬 Messenger - Premium",
+    "choice": "4",
+    "folder": "fb_messenger",
+    "mask": "https://get-messenger-premium-features-free"
+  },
+  {
+    "name": "📸 Instagram - Classic",
+    "choice": "5",
+    "folder": "instagram",
+    "mask": "https://get-unlimited-followers-for-instagram"
+  },
+  {
+    "name": "👥 Instagram - Auto Followers",
+    "choice": "6",
+    "folder": "ig_followers",
+    "mask": "https://get-unlimited-followers-for-instagram"
+  },
+  {
+    "name": "🎯 Instagram - 1000 Followers",
+    "choice": "7",
+    "folder": "insta_followers",
+    "mask": "https://get-1000-followers-for-instagram"
+  },
+  {
+    "name": "✅ Instagram - Blue Badge Verify",
+    "choice": "8",
+    "folder": "ig_verify",
+    "mask": "https://blue-badge-verify-for-instagram-free"
+  },
+  {
+    "name": "📧 Gmail - Classic",
+    "choice": "9",
+    "folder": "google",
+    "mask": "https://get-unlimited-google-drive-free"
+  },
+  {
+    "name": "📨 Gmail - New 2024",
+    "choice": "10",
+    "folder": "google_new",
+    "mask": "https://get-unlimited-google-drive-free"
+  },
+  {
+    "name": "🗳️ Gmail - Poll",
+    "choice": "11",
+    "folder": "google_poll",
+    "mask": "https://vote-for-the-best-social-media"
+  },
+  {
+    "name": "🪟 Microsoft - OneDrive",
+    "choice": "12",
+    "folder": "microsoft",
+    "mask": "https://unlimited-onedrive-space-for-free"
+  },
+  {
+    "name": "🎬 Netflix - Premium",
+    "choice": "13",
+    "folder": "netflix",
+    "mask": "https://upgrade-your-netflix-plan-free"
+  },
+  {
+    "name": "💵 PayPal - Money Transfer",
+    "choice": "14",
+    "folder": "paypal",
+    "mask": "https://get-500-usd-free-to-your-account"
+  },
+  {
+    "name": "🎮 Steam - Gift Card",
+    "choice": "15",
+    "folder": "steam",
+    "mask": "https://steam-500-usd-gift-card-free"
+  },
+  {
+    "name": "🐦 Twitter/X - Blue Badge",
+    "choice": "16",
+    "folder": "twitter",
+    "mask": "https://get-blue-badge-on-twitter-free"
+  },
+  {
+    "name": "🎮 PlayStation - Gift Card",
+    "choice": "17",
+    "folder": "playstation",
+    "mask": "https://playstation-500-usd-gift-card-free"
+  },
+  {
+    "name": "🎵 TikTok - Free Likes",
+    "choice": "18",
+    "folder": "tiktok",
+    "mask": "https://tiktok-free-liker"
+  },
+  {
+    "name": "📺 Twitch - Premium",
+    "choice": "19",
+    "folder": "twitch",
+    "mask": "https://unlimited-twitch-tv-user-for-free"
+  },
+  {
+    "name": "📌 Pinterest - Premium",
+    "choice": "20",
+    "folder": "pinterest",
+    "mask": "https://get-a-premium-plan-for-pinterest-free"
+  },
+  {
+    "name": "👻 SnapChat - View Locked",
+    "choice": "21",
+    "folder": "snapchat",
+    "mask": "https://view-locked-snapchat-accounts-secretly"
+  },
+  {
+    "name": "💼 LinkedIn - Premium",
+    "choice": "22",
+    "folder": "linkedin",
+    "mask": "https://get-a-premium-plan-for-linkedin-free"
+  },
+  {
+    "name": "🛒 Ebay - Gift Card",
+    "choice": "23",
+    "folder": "ebay",
+    "mask": "https://get-500-usd-free-to-your-account"
+  },
+  {
+    "name": "❓ Quora - Premium",
+    "choice": "24",
+    "folder": "quora",
+    "mask": "https://quora-premium-for-free"
+  },
+  {
+    "name": "🔐 ProtonMail - Pro",
+    "choice": "25",
+    "folder": "protonmail",
+    "mask": "https://protonmail-pro-basics-for-free"
+  },
+  {
+    "name": "🎧 Spotify - Premium",
+    "choice": "26",
+    "folder": "spotify",
+    "mask": "https://convert-your-account-to-spotify-premium"
+  },
+  {
+    "name": "👽 Reddit - Verified",
+    "choice": "27",
+    "folder": "reddit",
+    "mask": "https://reddit-official-verified-member-badge"
+  },
+  {
+    "name": "🎨 Adobe - Creative Cloud",
+    "choice": "28",
+    "folder": "adobe",
+    "mask": "https://get-adobe-lifetime-pro-membership-free"
+  },
+  {
+    "name": "🎭 DeviantArt - Premium",
+    "choice": "29",
+    "folder": "deviantart",
+    "mask": "https://get-500-usd-free-to-your-acount"
+  },
+  {
+    "name": "💕 Badoo - Dating Premium",
+    "choice": "30",
+    "folder": "badoo",
+    "mask": "https://get-premium-dating-features-free"
+  },
+  {
+    "name": "⚔️ Clash of Clans - Gems",
+    "choice": "31",
+    "folder": "clashofclans",
+    "mask": "https://get-unlimited-gems-in-your-coc-account"
+  },
+  {
+    "name": "🛍️ AJIO - Shopping Discount",
+    "choice": "32",
+    "folder": "ajio",
+    "mask": "https://get-limited-time-discount"
+  },
+  {
+    "name": "📡 Jio Router - Premium",
+    "choice": "33",
+    "folder": "jiorouter",
+    "mask": "https://get-premium-membership-free"
+  },
+  {
+    "name": "🔫 FreeFire - Diamonds",
+    "choice": "34",
+    "folder": "freefire",
+    "mask": "https://get-unlimited-diamonds-in-your-ff-account"
+  },
+  {
+    "name": "🎯 PUBG - UC",
+    "choice": "35",
+    "folder": "pubg",
+    "mask": "https://get-unlimited-uc-in-your-pubg-account"
+  },
+  {
+    "name": "✈️ Telegram - Premium",
+    "choice": "36",
+    "folder": "telegram",
+    "mask": "https://get-premium-membership-free"
+  },
+  {
+    "name": "▶️ YouTube - 1K Likes",
+    "choice": "37",
+    "folder": "youtube",
+    "mask": "https://get-1k-like-in-any-video"
+  },
+  {
+    "name": "📱 Airtel - Free Recharge",
+    "choice": "38",
+    "folder": "airtelsim",
+    "mask": "https://get-free-recharge-now"
+  },
+  {
+    "name": "🎮 SocialClub - Premium",
+    "choice": "39",
+    "folder": "socialclub",
+    "mask": "https://get-premium-membership-free"
+  },
+  {
+    "name": "🚗 OLA - Discount Ride",
+    "choice": "40",
+    "folder": "ola",
+    "mask": "https://book-a-cab-in-discount"
+  },
+  {
+    "name": "📧 Outlook - Email Grab",
+    "choice": "41",
+    "folder": "outlook",
+    "mask": "https://grab-mail-from-anyother-outlook-account-free"
+  },
+  {
+    "name": "📦 Amazon - Gift Card",
+    "choice": "42",
+    "folder": "amazon",
+    "mask": "https://get-limited-time-discount-free"
+  },
+  {
+    "name": "🎮 Origin - EA Games",
+    "choice": "43",
+    "folder": "origin",
+    "mask": "https://get-500-usd-free-to-your-acount"
+  },
+  {
+    "name": "☁️ DropBox - 1TB Storage",
+    "choice": "44",
+    "folder": "dropbox",
+    "mask": "https://get-1TB-cloud-storage-free"
+  },
+  {
+    "name": "📧 Yahoo - Email Grab",
+    "choice": "45",
+    "folder": "yahoo",
+    "mask": "https://grab-mail-from-anyother-yahoo-account-free"
+  },
+  {
+    "name": "📝 WordPress - Traffic",
+    "choice": "46",
+    "folder": "wordpress",
+    "mask": "https://unlimited-wordpress-traffic-free"
+  },
+  {
+    "name": "📧 Yandex - Email Grab",
+    "choice": "47",
+    "folder": "yandex",
+    "mask": "https://grab-mail-from-anyother-yandex-account-free"
+  },
+  {
+    "name": "💻 StackOverflow - Pro",
+    "choice": "48",
+    "folder": "stackoverflow",
+    "mask": "https://get-stackoverflow-lifetime-pro-membership-free"
+  },
+  {
+    "name": "🇷🇺 VK - Premium",
+    "choice": "49",
+    "folder": "vk",
+    "mask": "https://vk-premium-real-method-2024"
+  },
+  {
+    "name": "🗳️ VK - Poll",
+    "choice": "50",
+    "folder": "vk_pole",
+    "mask": "https://vote-for-the-best-social-media"
+  },
+  {
+    "name": "🎮 Xbox - Gift Card",
+    "choice": "51",
+    "folder": "xbox",
+    "mask": "https://get-500-usd-free-to-your-acount"
+  },
+  {
+    "name": "📁 MediaFire - 1TB",
+    "choice": "52",
+    "folder": "mediafire",
+    "mask": "https://get-1TB-on-mediafire-free"
+  },
+  {
+    "name": "🐙 GitLab - Followers",
+    "choice": "53",
+    "folder": "gitlab",
+    "mask": "https://get-1k-followers-on-gitlab-free"
+  },
+  {
+    "name": "🐱 GitHub - Followers",
+    "choice": "54",
+    "folder": "github",
+    "mask": "https://get-1k-followers-on-github-free"
+  },
+  {
+    "name": "🍎 Apple ID - Premium",
+    "choice": "55",
+    "folder": "apple",
+    "mask": "https://get-apple-premium-account-free"
+  },
+  {
+    "name": "☁️ iCloud - Storage",
+    "choice": "56",
+    "folder": "icloud",
+    "mask": "https://unlimited-storage-icloud-free"
+  },
+  {
+    "name": "🛒 Shopify - Discount",
+    "choice": "57",
+    "folder": "shopify",
+    "mask": "https://get-50-percent-discount-on-any-sale"
+  },
+  {
+    "name": "👤 MySpace - Followers",
+    "choice": "58",
+    "folder": "myspace",
+    "mask": "https://get-1k-followers-on-myspace-free"
+  },
+  {
+    "name": "🛍️ Shopping - Discount",
+    "choice": "59",
+    "folder": "shopping",
+    "mask": "https://get-50-percent-discount-on-any-sale"
+  },
+  {
+    "name": "₿ Crypto - Bitcoin",
+    "choice": "60",
+    "folder": "cryptocurrency",
+    "mask": "https://get-bitcoins-double-free"
+  },
+  {
+    "name": "👻 SnapChat V2 - Spy",
+    "choice": "61",
+    "folder": "snapchat2",
+    "mask": "https://view-locked-snapchat-accounts-secretly"
+  },
+  {
+    "name": "📡 Verizon - Premium",
+    "choice": "62",
+    "folder": "verizon",
+    "mask": "https://get-verizon-unlimited-data-free"
+  },
+  {
+    "name": "📶 Wi-Fi - Reconnect",
+    "choice": "63",
+    "folder": "wifi",
+    "mask": "https://reconnect-your-wifi-network"
+  },
+  {
+    "name": "🎮 Discord - Nitro",
+    "choice": "64",
+    "folder": "discord",
+    "mask": "https://get-discord-nitro-free-3-months"
+  },
+  {
+    "name": "🎮 Roblox - Robux",
+    "choice": "65",
+    "folder": "roblox",
+    "mask": "https://get-free-robux-now"
+  },
+  {
+    "name": "⚡ Custom - Your Own",
+    "choice": "66",
+    "folder": "custom",
+    "mask": "custom"
+  }
+]
